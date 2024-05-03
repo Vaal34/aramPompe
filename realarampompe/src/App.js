@@ -6,13 +6,14 @@ import { useNavigate } from "react-router-dom";
 function App() {
 
   const navigate = useNavigate();
-  const pseudo = useState('')
+  const [Pseudo, setPseudo] = useState('');
   
   const handleSubmit = (event) => {
     event.preventDefault();
     const Pseudo = $('.inputText').val()
     console.log(Pseudo);
-    navigate('/dashboard', {state: {Pseudo:pseudo}});
+    setPseudo(Pseudo);
+    navigate('/dashboard', { state: { Pseudo: Pseudo } });
   };
 
   return (
