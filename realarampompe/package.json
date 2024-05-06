@@ -37,6 +37,12 @@
     ]
   },
   "devDependencies": {
-    "react-router-dom": "^6.23.0"
+    "crypto-browserify": "^3.12.0",
+    "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
+    "querystring-es3": "^0.2.1",
+    "react-app-rewired": "^2.2.1",
+    "react-router-dom": "^6.23.0",
+    "twisted": "^1.60.1"
   }
 }

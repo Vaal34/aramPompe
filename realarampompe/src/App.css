@@ -26,15 +26,17 @@ form input {
 }
 
 .inputText{
-  width: 200px;
-  height: 35px;
+  width: 250px;
+  height: 50px;
   border-radius: 20px;
   border-style: hidden;
   margin-bottom: 10px;
+  font-size: 20px;
 }
 
 h1 {
   margin-bottom: 15px;
+  font-size: 50px;
 }
 
 .sendInput {
@@ -62,8 +64,8 @@ h1 {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  width: 50%;
-  height: 35px;
+  width: 60%;
+  height: 40px;
 }
 
 .sendInput:disabled {
