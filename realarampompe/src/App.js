@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 function App() {
 
   const navigate = useNavigate();
+  // eslint-disable-next-line
   const [pseudo, setPseudo] = useState('');
   
   const handleSubmit = (event) => {
