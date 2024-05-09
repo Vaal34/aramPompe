@@ -1,0 +1,19 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+    display: table;
+}
+
+
+tbody tr:nth-child(-n+5) {
+    background-color: #66a1ff;
+}
+
+tbody tr:nth-child(+n+6) {
+    background-color: #ff6666;
+}
+
+tbody tr:hover {
+    background-color: #ffffff;
+    cursor: pointer;
+}

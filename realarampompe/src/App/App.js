@@ -8,22 +8,25 @@ function App() {
   const navigate = useNavigate();
   // eslint-disable-next-line
   const [pseudo, setPseudo] = useState('');
+  // eslint-disable-next-line
+  const [tag, setTag] = useState('');
   
   const handleSubmit = (event) => {
     event.preventDefault();
-    const Pseudo = $('.inputText').val()
-    setPseudo(Pseudo);
-    navigate('/dashboard', { state: { Pseudo: Pseudo } });
-  };
-
-  console.log("test")
-
+    const inputValue = $('.inputText').val();
+    const [gameName, tag] = inputValue.split('#');
+  
+    setTag(tag)
+    setPseudo(gameName);
+    navigate('/dashboard', { state: { gameName: gameName, tag: tag } });
+  
+  }
   return (
     <div className="App">
       <h1>ARAM POMPE</h1>
       <form onSubmit={handleSubmit}>
-        <input className='inputText' type='text' placeholder='Pseudo + #Tag'></input>
-        <input className='sendInput' type='submit'></input>
+        <input id="inputText" className='inputText' type='text' placeholder='gameName#tag'></input>
+        <button className='sendInput' type='submit'>Submit</button>
       </form>
     </div>
   );

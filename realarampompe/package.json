@@ -2,19 +2,24 @@
   "name": "realarampompe",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://europe.api.riotgames.com",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "cors": "^2.8.5",
+    "http-proxy-middleware": "^3.0.0",
     "jquery": "^3.7.1",
+    "node-fetch": "^3.3.2",
+    "path": "^0.12.7",
     "react": "^18.3.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
