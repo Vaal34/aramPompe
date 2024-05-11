@@ -1,0 +1,37 @@
+/* if Team win */
+.win {
+    border: 2px solid rgb(34, 45, 255);
+    background-color: rgb(173, 188, 255);
+    border-radius: 10px;
+}
+
+.loose {
+    border: 2px solid rgb(255, 75, 75);
+    background-color: rgb(255, 216, 216);
+    border-radius: 10px;
+}
+
+table {
+    display: table;
+    border-collapse: separate;
+    width: 50%;
+}
+
+th {
+    padding: 10px 20px;
+}
+
+td {
+    padding: 10px 20px;
+    width: 50%;
+}
+
+td:nth-child(2) {
+    text-align: center;
+}
+
+tbody td:hover {
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
