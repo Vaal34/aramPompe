@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import './Home.css';
+import './Dashboard.css';
 import TableNormalGame from '../TableNormalGame/TableNormalGame';
 import TableArenaMode from '../TableArenaMode/TableArenaMode';
-import { fetchRiotAccount, fetchLastMatch } from '../api'
+import { fetchRiotAccount, fetchLastMatch } from '../api/api'
 
 function Home() {
 
@@ -12,7 +12,7 @@ function Home() {
 
   useEffect(() => {
     const gameName = location.state.gameName;
-    const apiKey = "RGAPI-3b2e6303-647f-4e93-b5de-1dfd7c3c1a4e";
+    const apiKey = "RGAPI-6759e53b-fcf1-4df9-88da-a3e1f1e04d52";
     const tagGame = location.state.tag;
 
     fetchRiotAccount(gameName, tagGame, apiKey)
