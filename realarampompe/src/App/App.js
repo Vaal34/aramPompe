@@ -6,6 +6,7 @@ import LoginButton from "../Auth/Login/Login";
 import LogoutButton from "../Auth/Logout/Logout";
 import { useAuth0 } from '@auth0/auth0-react';
 
+
 function App() {
   
   const { isAuthenticated } = useAuth0();
@@ -21,11 +22,11 @@ function App() {
     event.preventDefault();
     const inputValue = $('.inputText').val();
     const [gameName, tag] = inputValue.split('#');
-  
+
     setTag(tag)
     setPseudo(gameName);
     navigate('/dashboard', { state: { gameName: gameName, tag: tag } });
-  
+
   }
 
   if (isAuthenticated) {

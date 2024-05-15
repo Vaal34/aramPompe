@@ -11,6 +11,7 @@
     "cors": "^2.8.5",
     "http-proxy-middleware": "^3.0.0",
     "jquery": "^3.7.1",
+    "mysql": "^2.18.1",
     "node-fetch": "^3.3.2",
     "path": "^0.12.7",
     "react": "^18.3.1",
@@ -47,6 +48,7 @@
     "@hot-loader/react-dom": "^17.0.2",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
+    "node-polyfill-webpack-plugin": "^3.0.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10",
@@ -55,7 +57,7 @@
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.23.0",
     "stream-browserify": "^3.0.0",
-    "twisted": "^1.60.1",
+    "stream-http": "^3.2.0",
     "vm-browserify": "^1.1.2"
   }
 }

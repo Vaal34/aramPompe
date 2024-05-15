@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { Auth0Provider } from '@auth0/auth0-react';
 
+
 const router = createBrowserRouter([
   {
     path: "/",
