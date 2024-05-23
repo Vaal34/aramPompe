@@ -5,19 +5,21 @@ import { useNavigate } from "react-router-dom";
 import LoginButton from "../Auth/Login/Login";
 import LogoutButton from "../Auth/Logout/Logout";
 import { useAuth0 } from '@auth0/auth0-react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
+const queryClient = new QueryClient();
 
 function App() {
-  
+
   const { isAuthenticated } = useAuth0();
-  
+
   const navigate = useNavigate();
-  
+
   /* eslint-disable-next-line */
   const [pseudo, setPseudo] = useState('');
   /* eslint-disable-next-line */
   const [tag, setTag] = useState('');
-  
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const inputValue = $('.inputText').val();
@@ -43,8 +45,11 @@ function App() {
     </>
     )
   } else {
-    return <LoginButton />
-  }
+    return(
+      <QueryClientProvider client={queryClient}>
+        <LoginButton />
+      </QueryClientProvider>
+  )}
 }
 
 export default App;
