@@ -12,7 +12,7 @@ function Home() {
 
   useEffect(() => {
     const gameName = location.state.gameName;
-    const apiKey = "RGAPI-6759e53b-fcf1-4df9-88da-a3e1f1e04d52";
+    const apiKey = "RGAPI-7d527e81-7230-4273-9a2e-1e42f1314c3b";
     const tagGame = location.state.tag;
 
     fetchRiotAccount(gameName, tagGame, apiKey)
