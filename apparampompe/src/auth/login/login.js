@@ -25,7 +25,11 @@ function Login() {
                     {isSignUp ? 'Login' : 'Sign Up'}
                 </button>
             </div>
-            <div className="background"></div>
+            <div className="background">
+                <video autoPlay loop muted>
+                    <source src={require("../../assets/Background.mp4")} type="video/mp4" />
+                </video>
+            </div>
         </div>
     );
 }
