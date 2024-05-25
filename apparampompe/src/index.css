@@ -1,4 +1,14 @@
 body {
   margin: 0;
   background-color: #ffffff;
+  position: relative; /* Add this line */
+}
+
+#volumeIcon {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  opacity: 0.8;
 }

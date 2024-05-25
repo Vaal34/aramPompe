@@ -27,7 +27,7 @@ function Login() {
             </div>
             <div className="background">
                 <video autoPlay loop muted>
-                    <source src={require("../../assets/Background.mp4")} type="video/mp4" />
+                    <source src={require("../../assets/Background1.webm")} type="video/webm" />
                 </video>
             </div>
         </div>
