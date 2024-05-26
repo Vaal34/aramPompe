@@ -45,3 +45,9 @@
     height: 100%;
     object-fit: cover;
 }
+
+.swapForm {
+    background: none;
+    border: none;
+    cursor: pointer;
+}

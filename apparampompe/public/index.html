@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -10,7 +10,7 @@
   </head>
   <body>
     <div id="root"></div>
-    <audio id="myAudio" src="%PUBLIC_URL%/song.mp3" autoplay loop></audio>
+    <audio id="myAudio" src="%PUBLIC_URL%/song.mp3" preload="auto" loop></audio>
     <img id="volumeIcon" src="%PUBLIC_URL%/volume.png" alt="Volume" onclick="toggleSound()">
     <script>
       function toggleSound() {
@@ -19,11 +19,23 @@
         if (audioElem.muted) {
           audioElem.muted = false;
           volumeIcon.src = "%PUBLIC_URL%/volume.png";
+          if (audioElem.paused) {
+            audioElem.play();
+          }
         } else {
           audioElem.muted = true;
           volumeIcon.src = "%PUBLIC_URL%/mute.png";
         }
       }
+
+      window.addEventListener('click', function() {
+        const audioElem = document.getElementById('myAudio');
+        if (audioElem.paused) {
+          audioElem.play().catch(error => {
+            console.log("La lecture automatique a échoué :", error);
+          });
+        }
+      });
     </script>
   </body>
 </html>

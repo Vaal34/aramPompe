@@ -4,6 +4,7 @@ import './loginForm.css';
 const LoginForm = () => {
     const [username, setUsername] = React.useState('');
     const [password, setPassword] = React.useState('');
+    const [rememberMe, setRememberMe] = React.useState(false);
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
@@ -11,6 +12,10 @@ const LoginForm = () => {
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
+    };
+
+    const handleRememberMeChange = (event) => {
+        setRememberMe(event.target.checked);
     };
 
     const handleLogin = () => {
@@ -35,6 +40,14 @@ const LoginForm = () => {
                     onChange={handlePasswordChange}
                     placeholder="Password"
                 />
+                <div className='remenberMe'>
+                    <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={handleRememberMeChange}
+                    />
+                    <label>Remember Me</label>
+                </div>
             </div>
             <button className="sendLogin" onClick={handleLogin}>
                 Login

@@ -29,7 +29,7 @@ form input {
   text-align: center;
 }
 
-h1 {
+.App h1 {
   margin-bottom: 15px;
   font-size: 50px;
   color: white;

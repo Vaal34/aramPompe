@@ -21,7 +21,7 @@ function Login() {
                     <img src={require("../../assets/logoAramPompe.png")} alt="" />
                 </div>
                 {isSignUp ? <SignUpForm /> : <LoginForm />}
-                <button onClick={isSignUp ? handleLoginClick : handleSignUpClick}>
+                <button className="swapForm" onClick={isSignUp ? handleLoginClick : handleSignUpClick}>
                     {isSignUp ? 'Login' : 'Sign Up'}
                 </button>
             </div>
