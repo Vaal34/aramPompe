@@ -3,7 +3,8 @@
 /arampompe
 
 # dependencies
-/node_modules
+apparampompe/backend/node_modules/
+apparampompe/frontend/node_modules/
 /.pnp
 .pnp.js
 
@@ -23,3 +24,5 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
