@@ -3,5 +3,5 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    height: auto;
+    height: 100vh;
 }
