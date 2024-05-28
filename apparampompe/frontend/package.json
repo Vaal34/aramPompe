@@ -2,11 +2,12 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://europe.api.riotgames.com",
+  "proxy": "http://localhost:5000",
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.2",
     "jquery": "^3.7.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

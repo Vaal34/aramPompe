@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import './loginForm.css';
 
 const LoginForm = () => {
-    const [username, setUsername] = React.useState('');
-    const [password, setPassword] = React.useState('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [rememberMe, setRememberMe] = React.useState(false);
 
     const handleUsernameChange = (event) => {
@@ -18,12 +21,25 @@ const LoginForm = () => {
         setRememberMe(event.target.checked);
     };
 
-    const handleLogin = () => {
-        // Handle login logic here
+    const handleLogin = async (event) => {
+        event.preventDefault();
+        try {
+            const response = await axios.post('/api/users/login', {
+                username,
+                password
+            });
+            setSuccess('Login successful');
+            setError('');
+            localStorage.setItem('token', response.data.token);
+        } catch (error) {
+            setError('Error logging in');
+            setSuccess('');
+            console.error('Error logging in:', error);
+        }
     };
 
     return (
-        <div className="loginCard">
+        <form className="loginCard" onSubmit={handleLogin}>
             <div className="title">
                 <h1>Login</h1>
             </div>
@@ -49,10 +65,10 @@ const LoginForm = () => {
                     <label>Remember Me</label>
                 </div>
             </div>
-            <button className="sendLogin" onClick={handleLogin}>
-                Login
-            </button>
-        </div>
+            {error && <p className="error">{error}</p>}
+            {success && <p className="success">{success}</p>}
+            <button className="sendLogin" type="submit">Login</button>
+        </form>
     );
 };
 

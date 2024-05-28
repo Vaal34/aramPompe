@@ -1,11 +1,15 @@
 
 import React from 'react';
 import './signUpForm.css';
+import axios from 'axios';
 
 const SignUpForm = () => {
     const [username, setUsername] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
+    const [confirmPassword, setConfirmPassword] = React.useState('');
+    const [error, setError] = React.useState('');
+    const [success, setSuccess] = React.useState('');
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
@@ -19,12 +23,33 @@ const SignUpForm = () => {
         setPassword(event.target.value);
     };
 
-    const handleSignUp = () => {
-        // Handle login logic here
+    const handleConfirmPasswordChange = (event) => {
+        setConfirmPassword(event.target.value);
+    };
+
+    const handleSignUp = async (event) => {
+        event.preventDefault();
+        if (password !== confirmPassword) {
+            setError('Passwords do not match');
+            return;
+        }
+        try {
+            const response = await axios.post('/api/users/register', {
+                username,
+                email,
+                password
+            });
+            setSuccess('User registered successfully', response.data.token);
+            setError('');
+        } catch (error) {
+            setError('Error registering user');
+            setSuccess('');
+            console.error('Error registering user:', error);
+        }
     };
 
     return (
-        <div className="signUpCard">
+        <form className="signUpCard" onSubmit={handleSignUp}>
             <div className="title">
                 <h1>Sign Up</h1>
             </div>
@@ -49,13 +74,15 @@ const SignUpForm = () => {
                 />
                 <input
                     type="password"
-                    value={password}
-                    onChange={handlePasswordChange}
+                    value={confirmPassword}
+                    onChange={handleConfirmPasswordChange}
                     placeholder="Confirm Password"
                 />
             </div>
-            <button className="sendSignUp" onClick={handleSignUp}> Sign Up </button>
-        </div>
+            {error && <p className="error">{error}</p>}
+            {success && <p className="success">{success}</p>}
+            <button className="sendSignUp" type="submit">Sign Up</button>
+        </form>
     );
 };
 
