@@ -4,6 +4,7 @@ import App from './App/App';
 import Login from './auth/login/login';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
+import Profile from './profile/profile';
 
 const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ const router = createBrowserRouter([
   {
     path: "/app",
     element: <App />
+  },
+  {
+    path: "/profile",
+    element: <Profile />
   }
 ]);
 
