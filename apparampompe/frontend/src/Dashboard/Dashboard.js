@@ -5,34 +5,47 @@ import TableArenaMode from '../TableArenaMode/TableArenaMode';
 import axios from 'axios';
 
 function Dashboard() {
-
   const [matchData, setMatchData] = useState({});
+  const [isLoading, setIsLoading] = useState(true); // New state for tracking loading status
 
-  const gameName = "Kaao";
-  const tag = "EUV";
+  const userName = "Kaao";
+  const tagGame = "EUV";
 
   useEffect(() => {
-    axios.get(`/api/riot/account/${gameName}/${tag}`)
-      .then(response => {
-        axios.get(`/api/riot/matches/${response.data.puuid}`)
-          .then(response => {
-            setMatchData(response.data);  // Mise à jour de l'état avec les données des matchs
-          })
-          .catch(console.error);
-      })
-      .catch(console.error);
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const accountResponse = await axios.get(`/api/riot/account/${userName}/${tagGame}`);
+        const matchesResponse = await axios.get(`/api/riot/matches/${accountResponse.data.puuid}`);
+        setMatchData(matchesResponse.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setIsLoading(false);
+      }
+    }
+    fetchData();
   }, []);
 
-  const gameMode = matchData.info?.gameMode
+  const gameMode = matchData.info?.gameMode;
 
-  return (
-    <div className='containerTable'>
-      {gameMode !== "CHERRY" ? (
-        <TableNormalGame matchData={matchData} gameName={gameName} />
-      ) : (
-        <TableArenaMode matchData={matchData}/>
-      )}
-    </div>
-  )
+  if (isLoading) {
+    return (
+      <div className='loading'>
+        <img src={require("../assets/loading.gif")} alt="GIF de chargement"></img>
+      </div>
+    );
+  } else {
+    return (
+      <div className='containerTable'>
+        {gameMode !== "CHERRY" ? (
+          <TableNormalGame matchData={matchData} gameName={userName} />
+        ) : (
+          <TableArenaMode matchData={matchData}/>
+        )}
+      </div>
+    );
+  }
 }
+
 export default Dashboard;
