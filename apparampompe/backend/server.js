@@ -5,21 +5,26 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-7bae316f-5d40-45c2-a87c-7067a9d3b4f0';
+const RIOT_API_KEY = 'RGAPI-808e504e-3f9d-4fc8-9772-0102b442cf0e';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+}));
 
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
+    user: 'val34',
     password: 'root',
-    database: 'auth'
+    database: 'ARAMPOMPE'
 });
 
 db.connect(err => {
