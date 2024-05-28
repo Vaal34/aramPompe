@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './loginForm.css';
 
@@ -7,7 +8,9 @@ const LoginForm = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [rememberMe, setRememberMe] = React.useState(false);
+    const [loggedInUser, setLoggedInUser] = useState(null);
+
+    const navigate = useNavigate();
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
@@ -15,10 +18,6 @@ const LoginForm = () => {
 
     const handlePasswordChange = (event) => {
         setPassword(event.target.value);
-    };
-
-    const handleRememberMeChange = (event) => {
-        setRememberMe(event.target.checked);
     };
 
     const handleLogin = async (event) => {
@@ -30,7 +29,8 @@ const LoginForm = () => {
             });
             setSuccess('Login successful');
             setError('');
-            localStorage.setItem('token', response.data.token);
+            setLoggedInUser(response.data.username);
+            navigate('/profile');
         } catch (error) {
             setError('Error logging in');
             setSuccess('');
@@ -38,37 +38,49 @@ const LoginForm = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+            try {
+                const response = await axios.get('/api/users/current');
+                setLoggedInUser(response.data.username);
+            } catch (error) {
+                console.error('Error fetching current user:', error);
+            }
+        };
+        fetchCurrentUser();
+    }, []);
+
     return (
-        <form className="loginCard" onSubmit={handleLogin}>
-            <div className="title">
-                <h1>Login</h1>
-            </div>
-            <div className="loginForm">
-                <input
-                    type="text"
-                    value={username}
-                    onChange={handleUsernameChange}
-                    placeholder="Username"
-                />
-                <input
-                    type="password"
-                    value={password}
-                    onChange={handlePasswordChange}
-                    placeholder="Password"
-                />
-                <div className='remenberMe'>
-                    <input
-                        type="checkbox"
-                        checked={rememberMe}
-                        onChange={handleRememberMeChange}
-                    />
-                    <label>Remember Me</label>
+        <div>
+            {loggedInUser ? (
+                <div>
+                    <h2>Welcome, {loggedInUser}!</h2>
                 </div>
-            </div>
-            {error && <p className="error">{error}</p>}
-            {success && <p className="success">{success}</p>}
-            <button className="sendLogin" type="submit">Login</button>
-        </form>
+            ) : (
+                <form className="loginCard" onSubmit={handleLogin}>
+                    <div className="title">
+                        <h1>Login</h1>
+                    </div>
+                    <div className="loginForm">
+                        <input
+                            type="text"
+                            value={username}
+                            onChange={handleUsernameChange}
+                            placeholder="Username"
+                        />
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={handlePasswordChange}
+                            placeholder="Password"
+                        />
+                    </div>
+                    {error && <p className="error">{error}</p>}
+                    {success && <p className="success">{success}</p>}
+                    <button className="sendLogin" type="submit">Login</button>
+                </form>
+            )}
+        </div>
     );
 };
 

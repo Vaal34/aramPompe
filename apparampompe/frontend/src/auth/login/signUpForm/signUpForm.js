@@ -33,6 +33,11 @@ const SignUpForm = () => {
             setError('Passwords do not match');
             return;
         }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                setError('Invalid email format');
+                return;
+            }
         try {
             const response = await axios.post('/api/users/register', {
                 username,

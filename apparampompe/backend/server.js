@@ -3,23 +3,23 @@ const axios = require('axios');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = 5000;
 
 const RIOT_API_KEY = 'RGAPI-7bae316f-5d40-45c2-a87c-7067a9d3b4f0';
+const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 const db = mysql.createConnection({
-    /*host: 'localhost',
+    host: 'localhost',
     user: 'root',
     password: 'root',
-    database: 'auth'*/
-    host: 'localhost',
-    user: 'val34',
-    password: 'root',
-    database: 'ARAMPOMPE'
+    database: 'auth'
 });
 
 db.connect(err => {
@@ -31,7 +31,7 @@ db.connect(err => {
 });
 
 app.get('/api', (req, res) => {
-    console.log('API endpoint');
+    res.send('API endpoint');
 });
 
 // Fetch Riot account information
@@ -72,11 +72,6 @@ app.post('/api/users/register', async (req, res) => {
 
     if (!username || !password || !email) {
         return res.status(400).send('Username, password, and email are required');
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        return res.status(400).send('Invalid email format');
     }
 
     try {
@@ -121,15 +116,53 @@ app.post('/api/users/login', async (req, res) => {
             }
 
             const user = results[0];
+            console.log('User:', user);
             const passwordMatch = await bcrypt.compare(password, user.password_hash);
             if (!passwordMatch) {
                 return res.status(400).send('Invalid username or password');
             }
-            res.status(201).send('User logged successfully');
+
+            const token = jwt.sign(
+                { id: user.id, username: user.username, email: user.email },
+                JWT_SECRET,
+                { expiresIn: '1h' }
+            );
+            console.log('Token:', token);
+            res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+            res.json({ message: 'Login successful', username: user.username });
         });
     } catch (error) {
         console.error('Error during login:', error);
         res.status(500).send('Error logging in user');
+    }
+});
+
+const authenticateToken = (req, res, next) => {
+    const token = req.cookies.token || req.headers['authorization'];
+    if (!token) {
+        console.log('No token found');
+        return res.sendStatus(401);
+    }
+
+    jwt.verify(token, JWT_SECRET, (err, user) => {
+        if (err) {
+            console.log('Token verification failed:', err);
+            return res.sendStatus(403);
+        }
+        req.user = user;
+        next();
+    });
+};
+
+app.get('/api/users/current', authenticateToken, (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+        res.json({ id: req.user.id, username: req.user.username, email: req.user.email });
+    } catch (error) {
+        console.error('Error fetching current user:', error);
+        res.status(500).json({ message: 'Internal server error' });
     }
 });
 
