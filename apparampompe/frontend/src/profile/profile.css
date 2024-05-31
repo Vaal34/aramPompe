@@ -1,0 +1,146 @@
+.bodyProfile {
+    width: 100vw;
+    height: 100vh;
+    background-color: #d1d1d1;
+}
+
+/* ===================  Part Left Profile */
+
+.partLeftProfile {
+    float: left;
+    width: 30%;
+    height: 100vh;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: #110c2e26 0px 30px 100px 0px;
+}
+
+.flecheRetour {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    width: 50px
+}
+
+/* ===================  END Part Left Profile */
+
+
+/* =================== Card Profile */
+
+.cardProfile {
+    padding: 10% 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+    height: 70%;
+    width: 70%;
+}
+
+.cardProfile img {
+    width: 50%;
+}
+
+.cardProfile h1 {
+    color: black;
+    margin-top: 30px;
+}
+
+/* =================== End Card Profile */
+
+.formProfile {
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+}
+.formProfile button {
+    font-family: 'Marcellus SC', serif;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 5px 15px;
+    background: #d13639;
+    color: #ffffff;
+    box-shadow: inset 0 0 2px #960808;
+    height: 60px;
+    margin-bottom: 5px;
+    margin-top: 20px;
+    border-radius: 10px;
+    border: 0;
+}
+
+.formProfile button:hover {
+    text-shadow: 0 0 5px #ffffff80;
+    box-shadow: 0 0 8px 0 #ffffff50;
+    background: linear-gradient(to bottom, #d13639, #ea474d);
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+.formProfile button:active {
+    text-shadow: none;
+    box-shadow: none;
+    color: #00000030;
+}
+
+.buttonEditProfile {
+    width: 10%;
+    cursor: pointer;
+}
+
+
+/* =================== Part Right Profile */
+
+.partRightProfile {
+    width: 70%;
+    float: right;
+    display: flex;
+}
+
+.partRightProfile {
+    background-color: #ceb9b9;
+}
+
+.rightBloc {
+    background-color: #ffffff;
+    width: 50%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.leftBloc {
+    background-color: #ffffff;
+    height: 100vh;
+    width: 50%;
+}
+
+.leftBloc div {
+    background-color: #ffffff;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.innerDiv,
+.leftBloc div .innerDiv {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(231, 231, 231);
+    border-radius: 25px;
+    box-shadow: inset 0px 0px 19px 7px rgba(52, 52, 52, 0.1);
+}
+
+.innerDiv:hover,
+.leftBloc div .innerDiv:hover {
+    background-color: #d8d8d8;
+    cursor: pointer;
+}
+/* =================== END Part Right Profile */
