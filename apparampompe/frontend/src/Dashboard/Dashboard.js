@@ -8,8 +8,8 @@ function Dashboard() {
   const [matchData, setMatchData] = useState({});
   const [isLoading, setIsLoading] = useState(true); // New state for tracking loading status
 
-  const userName = "Kaao";
-  const tagGame = "EUV";
+  const userName = "DoubleuV";
+  const tagGame = "uwu";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -17,6 +17,7 @@ function Dashboard() {
         setIsLoading(true);
         const accountResponse = await axios.get(`/api/riot/account/${userName}/${tagGame}`);
         const matchesResponse = await axios.get(`/api/riot/matches/${accountResponse.data.puuid}`);
+        await new Promise(resolve => setTimeout(resolve, 2000));
         setMatchData(matchesResponse.data);
         setIsLoading(false);
       } catch (error) {

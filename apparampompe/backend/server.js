@@ -10,7 +10,7 @@ const cors = require('cors');
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-808e504e-3f9d-4fc8-9772-0102b442cf0e';
+const RIOT_API_KEY = 'RGAPI-6f46489b-bd6d-4722-ac1d-3a6dc0361656';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());

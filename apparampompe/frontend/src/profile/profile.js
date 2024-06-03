@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './profile.css';
+import EditProfile from './editProfile/editProfile';
+import UserProfile from './userProfile/userProfile';
 
 const Profile = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const [editUser, setEditUser] = useState(false);
+
+    const navigate =  useNavigate();
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -30,18 +36,44 @@ const Profile = () => {
         return <p>{error}</p>;
     }
 
+    const handleImageClick = () => {
+        setEditUser(!editUser);
+    };
+
     return (
-        <div className="profileCard">
-            <h1>Profile</h1>
-            {user ? (
-                <div>
-                    <p>Username: {user.username}</p>
-                    <p>Email: {user.email}</p>
-                </div>
-            ) : (
-                <p>No user information available</p>
-            )}
+        <>
+        <div className="partLeftProfile">
+            <img
+                className='flecheRetour'
+                src={require('../assets/flecheRetour.png')}
+                onClick={() => navigate('/dashboard')}
+                alt='fleche retour'
+            ></img>
+            <div className='cardProfile'>
+            <img src={require("../assets/logoAramPompe.png")} alt="Logo AramPompe" />
+            <h1>{user.username}</h1>
+                {editUser ? <UserProfile user={user}/> : <EditProfile user={user}/>}
+            </div>
+            <img
+                className='buttonEditProfile'
+                src={editUser ? require('../assets/edit.png') : require('../assets/profil.png')}
+                alt='edit profile'
+                onClick={handleImageClick}/>
         </div>
+        <div className="partRightProfile">
+            <div className='leftBloc'>
+                <div>
+                    <div className='innerDiv'></div>
+                </div>
+                <div>
+                    <div className='innerDiv'></div>
+                </div>
+            </div>
+            <div className='rightBloc'>
+                <div className='innerDiv'></div>
+            </div>
+        </div>
+        </>
     );
 };
 
