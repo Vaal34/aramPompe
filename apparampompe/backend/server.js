@@ -10,7 +10,7 @@ const cors = require('cors');
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-6f46489b-bd6d-4722-ac1d-3a6dc0361656';
+const RIOT_API_KEY = 'RGAPI-6733f32e-2867-4ee5-8ca4-8a214c722531';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());
@@ -22,9 +22,9 @@ app.use(cors({
 
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'val34',
+    user: 'root',
     password: 'root',
-    database: 'ARAMPOMPE'
+    database: 'auth'
 });
 
 db.connect(err => {
