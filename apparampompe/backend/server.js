@@ -10,7 +10,7 @@ const cors = require('cors');
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-6733f32e-2867-4ee5-8ca4-8a214c722531';
+const RIOT_API_KEY = 'RGAPI-2c08c936-0882-4af1-b2bb-4ed47121bf3e';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());
@@ -22,9 +22,9 @@ app.use(cors({
 
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
+    user: 'val34',
     password: 'root',
-    database: 'auth'
+    database: 'ARAMPOMPE'
 });
 
 db.connect(err => {
@@ -82,7 +82,7 @@ app.post('/api/users/register', async (req, res) => {
     try {
         const passwordHash = await bcrypt.hash(password, 10);
         console.log('Password hash:', passwordHash);
-        const sql = 'INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)';
+        const sql = 'INSERT INTO users_log (username, password_hash, email) VALUES (?, ?, ?)';
 
         db.query(sql, [username, passwordHash, email], (err, result) => {
             if (err) {
@@ -109,7 +109,7 @@ app.post('/api/users/login', async (req, res) => {
     }
 
     try {
-        const sql = 'SELECT * FROM users WHERE username = ?';
+        const sql = 'SELECT * FROM users_log WHERE username = ?';
         db.query(sql, [username], async (err, results) => {
             if (err) {
                 console.error('Error fetching user:', err);
@@ -168,6 +168,32 @@ app.get('/api/users/current', authenticateToken, (req, res) => {
     } catch (error) {
         console.error('Error fetching current user:', error);
         res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+//  user_info
+app.post('/api/user/user_info', authenticateToken, (req, res) => {
+    const { userId, friendsProfile, targetProfile } = req.body;
+
+    const targetColumn = '';
+    if (targetProfile){
+        targetColumn = targetProfile;
+    } else if (friendsProfile){
+        targetColumn = 'friends_profile';
+    }
+
+    try {
+        const sql = `UPDATE user_info SET ${targetColumn} = ? WHERE user_id = ?`;
+        db.query(sql, [JSON.stringify(friendsProfile), userId], (err, result) => {
+            if (err) {
+                console.error('Error updating friends profile:', err);
+                return res.status(500).send('Error updating friends profile');
+            }
+            res.status(200).send('Friends profile updated successfully');
+        });
+    } catch (error) {
+        console.error('Error updating friends profile:', error);
+        res.status(500).send('Internal server error');
     }
 });
 
