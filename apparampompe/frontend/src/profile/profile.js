@@ -63,11 +63,11 @@ const Profile = () => {
         </div>
         <div className="partRightProfile">
             <div className='leftBloc'>
-                <div>
-                    <FriendList/>
+                <div className='leftBlocTop'>
+                    <FriendList user={user}/>
                 </div>
-                <div>
-                    <TargetList />
+                <div className='leftBlocBot'>
+                    <TargetList user={user}/>
                 </div>
             </div>
             <div className='rightBloc'>

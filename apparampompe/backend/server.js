@@ -6,11 +6,11 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-
+const { v4: uuidv4 } = require('uuid')
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-2c08c936-0882-4af1-b2bb-4ed47121bf3e';
+const RIOT_API_KEY = 'RGAPI-1a2b9c63-bfbe-407e-8221-d95df1a77f33';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());
@@ -82,21 +82,30 @@ app.post('/api/users/register', async (req, res) => {
     try {
         const passwordHash = await bcrypt.hash(password, 10);
         console.log('Password hash:', passwordHash);
-        const sql = 'INSERT INTO users_log (username, password_hash, email) VALUES (?, ?, ?)';
 
-        db.query(sql, [username, passwordHash, email], (err, result) => {
+        const userId = uuidv4();
+        const sqlInsertUser = 'INSERT INTO users_log (id, username, password_hash, email) VALUES (?, ?, ?, ?)';
+        db.query(sqlInsertUser, [userId, username, passwordHash, email]);
+
+        const sqlInsertUserInfo = 'INSERT INTO user_info (user_id, targets_profile, friends_profile) VALUES (?, ?, ?)';
+        db.query(sqlInsertUserInfo, [userId, JSON.stringify({}), JSON.stringify({})], (err, result) => {
             if (err) {
-                if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(400).send('Username or email already exists');
-                }
-                console.error('Error registering user:', err);
+                console.error('Error inserting user info:', err);
                 return res.status(500).send('Error registering user');
             }
-            res.status(201).send('User registered successfully');
         });
+
+        const sqlInsertUserStat = 'INSERT INTO user_stat (user_id, pompe, calorie) VALUES (?, ?, ?)';
+        db.query(sqlInsertUserStat, [userId, 0, 0]);
+
+        res.status(201).send('User registered successfully');
     } catch (error) {
-        console.error('Error hashing password:', error);
-        res.status(500).send('Error registering user');
+        console.error('Error registering user:', error);
+        if (error.code === 'ER_DUP_ENTRY') {
+            res.status(400).send('Username or email already exists');
+        } else {
+            res.status(500).send('Error registering user');
+        }
     }
 });
 
@@ -171,31 +180,76 @@ app.get('/api/users/current', authenticateToken, (req, res) => {
     }
 });
 
+app.get('/api/user/:id', authenticateToken, (request, response) => {
+    const { id } = request.params;
+    const sql = `SELECT * FROM users_log WHERE id = ?`;
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error('Error fetching user:', err);
+            return response.status(500).send('Error fetching user');
+        }
+
+        if (result.length === 0) {
+            return response.status(404).send('User not found');
+        }
+
+        response.json(result[0]);
+    });
+});
+
+
 //  user_info
-app.post('/api/user/user_info', authenticateToken, (req, res) => {
-    const { userId, friendsProfile, targetProfile } = req.body;
+app.post('/api/user/friends/addfriend', authenticateToken, (req, res) => {
+    const { user_id, friends_profile } = req.body;
 
-    const targetColumn = '';
-    if (targetProfile){
-        targetColumn = targetProfile;
-    } else if (friendsProfile){
-        targetColumn = 'friends_profile';
-    }
+    const sql = `UPDATE user_info SET friends_profile = ? WHERE user_id = ?`;
+    db.query(sql, [JSON.stringify(friends_profile), user_id], (err, result) => {
+        if (err) {
+            console.error('Error updating friends profile:', err);
+            return res.status(500).send('Error updating friends profile');
+        }
+        console.log('Friends profile updated successfully');
+        res.status(200).send('Friends profile updated successfully');
+    });
+});
 
-    try {
-        const sql = `UPDATE user_info SET ${targetColumn} = ? WHERE user_id = ?`;
-        db.query(sql, [JSON.stringify(friendsProfile), userId], (err, result) => {
+app.post('/api/user/friends/deletefriend', authenticateToken, async (req, res) => {
+    const { user_id, friend } = req.body.data;
+    const sql = `SELECT friends_profile from user_info WHERE user_id = ?`;
+    let listFriend = [];
+    db.query(sql, [user_id], (err, result) => {
+        console.log(result);
+        listFriend = result[0].friends_profile;
+        listFriend = listFriend.filter(f => f !== friend);
+
+        updateSQL = `UPDATE user_info SET friends_profile = ? WHERE user_id = ?`;
+        db.query(updateSQL, [JSON.stringify(listFriend), user_id], (err, result) => {
             if (err) {
                 console.error('Error updating friends profile:', err);
                 return res.status(500).send('Error updating friends profile');
             }
+            console.log('Friends profile updated successfully');
             res.status(200).send('Friends profile updated successfully');
         });
-    } catch (error) {
-        console.error('Error updating friends profile:', error);
-        res.status(500).send('Internal server error');
-    }
+    });
 });
+
+app.get('/api/user/user_info/:id', authenticateToken, (req, res) => {
+    const { id } = req.params;
+    const sql = `SELECT * FROM user_info WHERE user_id = ?`;
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error('Error fetching user info:', err);
+            return res.status(500).send('Error fetching user info');
+        }
+
+        if (result.length === 0) {
+            return res.status(404).send('User info not found');
+        }
+
+        res.json(result[0]);
+    });
+})
 
 app.listen(PORT, () => {
     console.log(`Backend server running on port ${PORT}`);

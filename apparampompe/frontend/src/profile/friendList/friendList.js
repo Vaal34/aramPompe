@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './friendList.css';
+import Select from 'react-select';
+import { components } from 'react-select';
 
-const FriendList = () => {
+const FriendList = ({ user }) => {
 
     const [newFriend, setNewFriend] = useState('');
     const [friends, setFriends] = useState([]);
@@ -17,6 +19,11 @@ const FriendList = () => {
                 setFriends([...friends, `${friendData.gameName}#${friendData.tagLine}`]);
                 setNewFriend('');
                 setFriendError('');
+                console.log(user)
+                axios.post('/api/user/friends/addfriend', {
+                    user_id: user.id,
+                    friends_profile: [...friends, `${friendData.gameName}#${friendData.tagLine}`]
+                });
             } catch (error) {
                 console.error('Error checking friend:', error);
                 setFriendError('User does not exist');
@@ -26,31 +33,55 @@ const FriendList = () => {
 
     const handleDeleteFriend = (friend) => {
         setFriends(friends.filter(f => f !== friend));
+        axios.post('/api/user/friends/deletefriend', {
+            data: {
+                user_id: user.id,
+                friend: friend
+            }
+        });
     };
 
-    return (
+    useEffect(() => {
+        const fetchFriends = async () => {
+            try {
+                const response = await axios.get(`/api/user/user_info/${user.id}`);
+                setFriends(response.data.friends_profile);
+            } catch (error) {
+                console.error('Failed to fetch friends:', error);
+            }
+        };
+        fetchFriends();
+    }, []);
+
+    const Option = props => {
+        return (
+          <div className='dropDown'>
+            <components.Option {...props}>
+              <span>{props.data.label}</span>
+            </components.Option>
+            <button onClick={() => handleDeleteFriend(props.data.value)}>X</button>
+          </div>
+        );
+      };
+
+      return (
         <div className='innerDiv' id="friendListSection">
             <h1>Friend List</h1>
-            <input
-                type="text"
-                value={newFriend}
-                onChange={(e) => setNewFriend(e.target.value)}
-                placeholder="Add a friend (format: gameName#tagGame)"
-            />
-            <button onClick={handleAddFriend}>Add Friend</button>
-            {friendError && <p style={{ color: 'red' }}>{friendError}</p>}
-            {friends.length > 0 ? (
-                <ul>
-                    {friends.map((friend, index) => (
-                        <li key={index}>
-                            {friend}
-                            <button onClick={() => handleDeleteFriend(friend)}>Delete</button>
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>No friends? Add one!</p>
-            )}
+            <div className='formFriendList'>
+                <input
+                    type="text"
+                    value={newFriend}
+                    onChange={(e) => setNewFriend(e.target.value)}
+                    placeholder="Add a friend (format: gameName#tagGame)"
+                    />
+                <button onClick={handleAddFriend}>Add Friend</button>
+            </div>
+            {friendError && <p style={{ color: 'red', fontSize: '1rem'}}>{friendError}</p>}
+            <Select
+                className='select'
+                options={friends.map(friend => ({ value: friend, label: friend }))}
+                components={{ Option }}
+                />
         </div>
     );
 };
