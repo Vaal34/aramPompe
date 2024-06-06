@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid')
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-1a2b9c63-bfbe-407e-8221-d95df1a77f33';
+const RIOT_API_KEY = 'RGAPI-e14b25d0-78e9-4db2-999b-57b9c1676493';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());
@@ -49,7 +49,7 @@ app.get('/api/riot/account/:gameName/:tagGame', async (req, res) => {
         res.json(response.data);
     } catch (error) {
         console.error('Error fetching riot data:', error);
-        res.status(500).send('Error fetching riot data');
+        return res.status(500).send('Error fetching riot data');
     }
 });
 
