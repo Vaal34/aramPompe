@@ -47,7 +47,7 @@ const SignUpForm = () => {
             setSuccess('User registered successfully', response.data.token);
             setError('');
         } catch (error) {
-            setError('Error registering user');
+            setError(error.response.data);
             setSuccess('');
             console.error('Error registering user:', error);
         }

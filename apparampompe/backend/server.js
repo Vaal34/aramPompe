@@ -79,34 +79,46 @@ app.post('/api/users/register', async (req, res) => {
         return res.status(400).send('Username, password, and email are required');
     }
 
-    try {
-        const passwordHash = await bcrypt.hash(password, 10);
-        console.log('Password hash:', passwordHash);
+    db.query('SELECT * FROM users_log WHERE username = ?', [username], async (err, result) => {
+        if (result.length > 0) {
+            return res.status(400).send('Username already exists');
+        } else {
+            try {
+                const passwordHash = await bcrypt.hash(password, 10);
+                console.log('Password hash:', passwordHash);
 
-        const userId = uuidv4();
-        const sqlInsertUser = 'INSERT INTO users_log (id, username, password_hash, email) VALUES (?, ?, ?, ?)';
-        db.query(sqlInsertUser, [userId, username, passwordHash, email]);
+                const userId = uuidv4();
+                const sqlInsertUser = 'INSERT INTO users_log (id, username, password_hash, email) VALUES (?, ?, ?, ?)';
+                db.query(sqlInsertUser, [userId, username, passwordHash, email], (err, result) => {
+                    if (err) {
+                        console.error('Error inserting user:', err);
+                        return res.status(500).send('Error registering user');
+                    }
 
-        const sqlInsertUserInfo = 'INSERT INTO user_info (user_id, targets_profile, friends_profile) VALUES (?, ?, ?)';
-        db.query(sqlInsertUserInfo, [userId, JSON.stringify({}), JSON.stringify({})], (err, result) => {
-            if (err) {
-                console.error('Error inserting user info:', err);
+                    const sqlInsertUserInfo = 'INSERT INTO user_info (user_id, targets_profile, friends_profile) VALUES (?, ?, ?)';
+                    db.query(sqlInsertUserInfo, [userId, JSON.stringify({}), JSON.stringify({})], (err, result) => {
+                        if (err) {
+                            console.error('Error inserting user info:', err);
+                            return res.status(500).send('Error registering user');
+                        }
+
+                        const sqlInsertUserStat = 'INSERT INTO user_stat (user_id, pompe, calorie) VALUES (?, ?, ?)';
+                        db.query(sqlInsertUserStat, [userId, 0, 0], (err, result) => {
+                            if (err) {
+                                console.error('Error inserting user stat:', err);
+                                return res.status(500).send('Error registering user');
+                            }
+
+                            return res.status(201).send('User registered successfully');
+                        });
+                    });
+                });
+            } catch (error) {
+                console.error('Error registering user:', error);
                 return res.status(500).send('Error registering user');
             }
-        });
-
-        const sqlInsertUserStat = 'INSERT INTO user_stat (user_id, pompe, calorie) VALUES (?, ?, ?)';
-        db.query(sqlInsertUserStat, [userId, 0, 0]);
-
-        res.status(201).send('User registered successfully');
-    } catch (error) {
-        console.error('Error registering user:', error);
-        if (error.code === 'ER_DUP_ENTRY') {
-            res.status(400).send('Username or email already exists');
-        } else {
-            res.status(500).send('Error registering user');
         }
-    }
+    });
 });
 
 // Login user
