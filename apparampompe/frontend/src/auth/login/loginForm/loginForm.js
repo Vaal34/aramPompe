@@ -38,17 +38,17 @@ const LoginForm = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchCurrentUser = async () => {
-            try {
-                const response = await axios.get('/api/users/current');
-                setLoggedInUser(response.data.username);
-            } catch (error) {
-                console.error('Error fetching current user:', error);
-            }
-        };
-        fetchCurrentUser();
-    }, []);
+    // useEffect(() => {
+    //     const fetchCurrentUser = async () => {
+    //         try {
+    //             const response = await axios.get('/api/users/current');
+    //             setLoggedInUser(response.data.username);
+    //         } catch (error) {
+    //             console.error('Error fetching current user:', error);
+    //         }
+    //     };
+    //     fetchCurrentUser();
+    // }, []);
 
     return (
         <div>
