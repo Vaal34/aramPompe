@@ -51,7 +51,7 @@ const FriendList = ({ user }) => {
             }
         };
         fetchFriends();
-    }, []);
+    }, [user.id]);
 
     const Option = props => {
         return (
