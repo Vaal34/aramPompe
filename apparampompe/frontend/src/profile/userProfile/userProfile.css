@@ -1,11 +1,13 @@
 .dataProfil {
     margin-top: 30px;
     width: 70%;
+
 }
 
 .dataProfil p {
     margin-top: 20px;
     text-align: left;
+    font-size: 1.5rem;
 }
 
 .dataProfil h2 {
@@ -16,7 +18,7 @@ Select {
     padding: 10px;
 }
 
-.sendAddAccount{
+.buttonLogout{
     font-family: 'Marcellus SC', serif;
     font-size: 15px;
     font-weight: bold;
@@ -32,7 +34,7 @@ Select {
     border: 0;
 }
 
-.sendAddAccount:hover {
+.buttonLogout:hover {
     text-shadow: 0 0 5px #ffffff80;
     box-shadow: 0 0 8px 0 #ffffff50;
     background: linear-gradient(to bottom, #d13639, #ea474d);
@@ -40,7 +42,7 @@ Select {
     transition: 0.1s;
 }
 
-.sendAddAccount:active {
+.buttonLogout:active {
     text-shadow: none;
     box-shadow: none;
     color: #00000030;

@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid')
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-e14b25d0-78e9-4db2-999b-57b9c1676493';
+const RIOT_API_KEY = 'RGAPI-529ec588-31d6-400b-90e1-98bf7e54a5c8';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());
@@ -162,6 +162,13 @@ app.post('/api/users/login', async (req, res) => {
         res.status(500).send('Error logging in user');
     }
 });
+
+// Logout user
+app.post('/api/users/logout', (req, res) => {
+    res.clearCookie('token', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    return res.status(200).send('Logged out successfully');
+});
+
 
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.token || req.headers['authorization'];
