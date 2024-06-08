@@ -16,13 +16,13 @@ const FriendList = ({ user }) => {
                 const [gameName, tagGame] = newFriend.split('#');
                 const response = await axios.get(`/api/riot/account/${gameName}/${tagGame}`);
                 const friendData = response.data;
-                setFriends([...friends, `${friendData.gameName}#${friendData.tagLine}`]);
+                const newFriendData = `${friendData.gameName}#${friendData.tagLine}`;
+                setFriends([...friends, newFriendData]);
                 setNewFriend('');
                 setFriendError('');
-                console.log(user)
                 axios.post('/api/user/friends/addfriend', {
                     user_id: user.id,
-                    friends_profile: [...friends, `${friendData.gameName}#${friendData.tagLine}`]
+                    friend: newFriendData
                 });
             } catch (error) {
                 console.error('Error checking friend:', error);
@@ -66,24 +66,28 @@ const FriendList = ({ user }) => {
 
       return (
         <div className='innerDiv' id="friendListSection">
-            <h1>Friend List</h1>
-            <div className='formFriendList'>
-                <input
-                    type="text"
-                    value={newFriend}
-                    onChange={(e) => setNewFriend(e.target.value)}
-                    placeholder="Add a friend (format: gameName#tagGame)"
-                    />
-                <button onClick={handleAddFriend}>Add Friend</button>
-            </div>
-            {friendError && <p style={{ color: 'red', fontSize: '1rem'}}>{friendError}</p>}
-            <Select
+          <h1>Friend List</h1>
+          <div className='formFriendList'>
+              <input
+                type="text"
+                value={newFriend}
+                onChange={(e) => setNewFriend(e.target.value)}
+                placeholder="Add a friend (format: gameName#tagGame)"
+                />
+              <button onClick={handleAddFriend}>Add Friend</button>
+          </div>
+          {friendError && <p style={{ color: 'red', fontSize: '1rem'}}>{friendError}</p>}
+          {friends.length > 0 ? (
+              <Select
                 className='select'
                 options={friends.map(friend => ({ value: friend, label: friend }))}
                 components={{ Option }}
-                />
+              />
+          ) : (
+              <p>No friends to display</p>
+          )}
         </div>
-    );
+      );
 };
 
 export default FriendList;

@@ -3,7 +3,7 @@ import React from 'react';
 import './signUpForm.css';
 import axios from 'axios';
 
-const SignUpForm = () => {
+const SignUpForm = ({ onRegisterSuccess }) => {
     const [username, setUsername] = React.useState('');
     const [email, setEmail] = React.useState('');
     const [password, setPassword] = React.useState('');
@@ -46,6 +46,7 @@ const SignUpForm = () => {
             });
             setSuccess('User registered successfully', response.data.token);
             setError('');
+            onRegisterSuccess(true)
         } catch (error) {
             setError(error.response.data);
             setSuccess('');
