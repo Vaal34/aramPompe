@@ -109,8 +109,8 @@ app.post('/api/users/register', async (req, res) => {
 
                 const friendsProfile = [];
                 const targetsProfile = [];
-                const sqlInsertUserInfo = 'INSERT INTO user_info (user_id, targets_profile, friends_profile) VALUES (?, ?, ?)';
-                db.query(sqlInsertUserInfo, [userId, JSON.stringify(friendsProfile), JSON.stringify(targetsProfile)], (err, result) => {
+                const sqlInsertUserInfo = 'INSERT INTO user_info (user_id, targets_profile, friends_profile, current_target) VALUES (?, ?, ?, ?)';
+                db.query(sqlInsertUserInfo, [userId, JSON.stringify(friendsProfile), JSON.stringify(targetsProfile), ""], (err, result) => {
                     if (err) {
                         console.error('Error inserting user info:', err);
                         return res.status(500).send('Error registering user');
@@ -274,6 +274,78 @@ app.post('/api/user/friends/deletefriend', authenticateToken, async (req, res) =
             console.log(`Friends ${friend} delete successfully`);
             res.status(200).send('Friends profile updated successfully');
         });
+    });
+});
+
+// Target Profile
+app.post('/api/user/targets/addtarget', authenticateToken, (req, res) => {
+    const { user_id, target } = req.body;
+
+    const sqlSelect = `SELECT targets_profile FROM user_info WHERE user_id = ?`;
+    db.query(sqlSelect, [user_id], (err, result) => {
+        if (err) {
+            console.error('Erreur lors de la récupération du profil des cibles :', err);
+            return res.status(500).send('Erreur lors de la récupération du profil des cibles');
+        }
+
+        let targetsProfile = result[0].targets_profile;
+        targetsProfile.push(target);
+
+        const sqlUpdate = `UPDATE user_info SET targets_profile = ? WHERE user_id = ?`;
+        db.query(sqlUpdate, [JSON.stringify(targetsProfile), user_id], (err, result) => {
+            if (err) {
+                console.error('Erreur lors de la mise à jour du profil des cibles :', err);
+                return res.status(500).send('Erreur lors de la mise à jour du profil des cibles');
+            }
+            console.log(`Cible ${target} ajoutée avec succès`);
+            res.status(200).send('Profil des cibles mis à jour avec succès');
+        });
+    });
+});
+
+
+app.post('/api/user/targets/deletetarget', authenticateToken, async (req, res) => {
+    const { user_id, target } = req.body.data;
+    const sql = `SELECT targets_profile from user_info WHERE user_id = ?`;
+    let listTarget = [];
+    db.query(sql, [user_id], (err, result) => {
+        listTarget = result[0].targets_profile;
+        listTarget = listTarget.filter(t => t !== target);
+
+        updateSQL = `UPDATE user_info SET targets_profile = ? WHERE user_id = ?`;
+        db.query(updateSQL, [JSON.stringify(listTarget), user_id], (err, result) => {
+            if (err) {
+                console.error('Error updating targets profile:', err);
+                return res.status(500).send('Error updating targets profile');
+            }
+            console.log(`Target ${target} delete successfully`);
+            res.status(200).send('Targets profile updated successfully');
+        });
+    });
+});
+
+app.post('/api/user/targets/currenttarget', authenticateToken, async (req, res) => {
+    const { user_id, target } = req.body;
+    const sql = `UPDATE user_info SET current_target = ? WHERE user_id = ?`;
+    db.query(sql, [target, user_id], (err, result) => {
+        if (err) {
+            console.error('Error updating current target:', err);
+            return res.status(500).send('Error updating current target');
+        }
+        console.log(`Current target ${target} updated successfully`);
+        res.status(200).send('Current target updated successfully');
+    });
+});
+
+app.get('/api/user/targets/currenttarget/:user_id', authenticateToken, (req, res) => {
+    const { user_id } = req.params;
+    const sql = `SELECT current_target FROM user_info WHERE user_id = ?`;
+    db.query(sql, [user_id], (err, result) => {
+        if (err) {
+            console.error('Error fetching current target:', err);
+            return res.status(500).send('Error fetching current target');
+        }
+        res.status(200).json({ currentTarget: result[0].current_target });
     });
 });
 
