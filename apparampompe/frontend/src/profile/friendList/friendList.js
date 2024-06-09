@@ -17,7 +17,12 @@ const FriendList = ({ user }) => {
                 const response = await axios.get(`/api/riot/account/${gameName}/${tagGame}`);
                 const friendData = response.data;
                 const newFriendData = `${friendData.gameName}#${friendData.tagLine}`;
-                setFriends([...friends, newFriendData]);
+                if (!friends.includes(newFriendData)) {
+                    setFriends([...friends, newFriendData]);
+                } else {
+                    setFriendError('Friend already exists');
+                    return false;
+                }
                 setNewFriend('');
                 setFriendError('');
                 axios.post('/api/user/friends/addfriend', {

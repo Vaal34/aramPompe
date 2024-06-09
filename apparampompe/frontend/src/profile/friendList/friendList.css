@@ -1,13 +1,10 @@
-/* Add comments to sections */
-/* ------------------------ */
-
 /* Friend List Section */
 #friendListSection {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-size: 120%;
+    font-size: 90%;
 }
 
 /* Input */
