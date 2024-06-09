@@ -5,7 +5,8 @@ import SignUpForm from './signUpForm/signUpForm';
 
 function Login() {
     const [isSignUp, setIsSignUp] = useState(false);
-    const [isRegistered, setIsRegistered] = useState(false); // New state variable
+    // eslint-disable-next-line
+    const [isRegistered, setIsRegistered] = useState(false);
 
     const handleSignUpClick = () => {
         setIsSignUp(true);
