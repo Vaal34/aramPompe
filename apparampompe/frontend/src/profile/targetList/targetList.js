@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import Select from 'react-select';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './targetList.css';
+import Select from 'react-select';
+import { components } from 'react-select';
 
-const TargetList = () => {
+const TargetList = ({ user }) => {
     const [newTarget, setNewTarget] = useState('');
     const [targetError, setTargetError] = useState('');
-    const [currentTarget, setCurrentTarget] = useState(null);
+    const [currentTarget, setCurrentTarget] = useState('');
     const [targets, setTargets] = useState([]);
+
 
     const handleAddTarget = async () => {
         if (newTarget) {
@@ -15,9 +17,19 @@ const TargetList = () => {
                 const [gameName, tagGame] = newTarget.split('#');
                 const response = await axios.get(`/api/riot/account/${gameName}/${tagGame}`);
                 const targetData = response.data;
-                setTargets([...targets, `${targetData.gameName}#${targetData.tagLine}`]);
+                const targetName = `${targetData.gameName}#${targetData.tagLine}`;
+                if (!targets.includes(targetName)) {
+                    setTargets([...targets, targetName]);
+                } else {
+                    setTargetError('Target already exists');
+                    return false;
+                }
                 setNewTarget('');
                 setTargetError('');
+                axios.post('/api/user/targets/addtarget', {
+                    user_id: user.id,
+                    target: targetName
+                });
             } catch (error) {
                 console.error('Error checking target:', error);
                 setTargetError('User does not exist');
@@ -25,48 +37,86 @@ const TargetList = () => {
         }
     };
 
-    const handleDeleteTarget = (target) => {
-        setTargets(targets.filter(t => t !== target));
+    const handleDeleteTarget = (targetName) => {
+        setTargets(targets.filter(t => t !== targetName));
+        axios.post('/api/user/targets/deletetarget', {
+            data: {
+                user_id: user.id,
+                target: targetName
+            }
+        });
     };
 
-    const handleTargetChange = (selectedOption) => {
-        setCurrentTarget(selectedOption);
+    const handleCurrentTarget = (selectedTarget) => {
+        setCurrentTarget(selectedTarget);
+        axios.post('/api/user/targets/currenttarget', {
+            user_id: user.id,
+            target: selectedTarget.value
+            })
+        .catch(error => {
+            console.error('Error updating current target:', error);
+        });
     };
 
-    const targetOptions = targets.map(target => ({ value: target, label: target }));
+    useEffect(() => {
+        const fetchTarget = async () => {
+            try {
+                const response = await axios.get(`/api/user/user_info/${user.id}`);
+                setTargets(response.data.targets_profile);
+            } catch (error) {
+                console.error('Failed to fetch targets:', error);
+            }
+        };
+        fetchTarget();
+    }, [user.id]);
+
+    useEffect(() => {
+        const fetchCurrentTarget = async () => {
+            try {
+                const response = await axios.get(`/api/user/targets/currenttarget/${user.id}`);
+                setCurrentTarget(response.data.currentTarget);
+            } catch (error) {
+                console.error('Failed to fetch current target:', error);
+            }
+        };
+        fetchCurrentTarget();
+    }, [user.id]);
+
+    const Option = props => {
+        return (
+          <div className='dropDownTargetList'>
+            <components.Option {...props}>
+              <span>{props.data.label}</span>
+            </components.Option>
+            <button onClick={() => handleDeleteTarget(props.data.value)}>X</button>
+          </div>
+        );
+    };
 
     return (
         <div className='innerDiv' id="targetListSection">
             <h1>Target List</h1>
-            <input
-                type="text"
-                value={newTarget}
-                onChange={(e) => setNewTarget(e.target.value)}
-                placeholder="Add a target (format: gameName#tagGame)"
-            />
-            <button onClick={handleAddTarget}>Add Target</button>
+            <div className='formTargetList'>
+                <input
+                    type="text"
+                    value={newTarget}
+                    onChange={(e) => setNewTarget(e.target.value)}
+                    placeholder="Add a target (format: gameName#tagGame)"
+                />
+                <button className='sendTarget' onClick={handleAddTarget}>Add Target</button>
+            </div>
             {targetError && <p style={{ color: 'red' }}>{targetError}</p>}
             {targets.length > 0 ? (
-                <>
-                    <ul>
-                        {targets.map((target, index) => (
-                            <li key={index}>
-                                {target}
-                                <button onClick={() => handleDeleteTarget(target)}>Delete</button>
-                            </li>
-                        ))}
-                    </ul>
-                    <Select
-                        options={targetOptions}
-                        onChange={handleTargetChange}
-                        placeholder="Select current target..."
+                <Select
+                    menuPlacement='auto'
+                    className='select'
+                    options={targets.map(target => ({ value: target, label: target }))}
+                    components={{ Option }}
+                    onChange={handleCurrentTarget}
+                    value={targets.map(target => ({ value: target, label: target })).find(option => option.value === currentTarget)}
                     />
-                    {currentTarget && (
-                        <p>Currently targeting: {currentTarget.label}</p>
-                    )}
-                </>
             ) : (
-                <p>No targets? Add one!</p>
+                <p>No targets</p>
             )}
         </div>
     );
