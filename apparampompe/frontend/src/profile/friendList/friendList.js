@@ -67,9 +67,47 @@ const FriendList = ({ user }) => {
             <button onClick={() => handleDeleteFriend(props.data.value)}>X</button>
           </div>
         );
-      };
+    };
 
-      return (
+    const selectStyles = {
+        container: (provided) => ({
+            ...provided,
+            padding: '8px',
+            borderRadius: '8px',
+            border: '1px solid #ddd',
+            backgroundColor: '#ddd',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            className: 'select-container',
+        }),
+        control: (provided, state) => ({
+            ...provided,
+            borderRadius: '8px',
+            '&:hover': {
+                borderColor: '#d13639',
+            },
+            boxShadow: 'none',
+            borderColor: '#d13639',
+            className: 'select__control',
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isFocused
+              ? '#f0f0f0'
+              : state.isSelected
+              ? '#e6e6e6'
+              : 'white',
+            color: state.isSelected ? '#d13639' : '#a7a7a7',
+            padding: '10px 15px',
+            cursor: 'pointer',
+            className: state.isFocused
+              ? 'select__option select__option--is-focused'
+              : state.isSelected
+              ? 'select__option select__option--is-selected'
+              : 'select__option',
+        })
+    };
+
+    return (
         <div className='innerDiv' id="friendListSection">
           <h1>Friend List</h1>
           <div className='formFriendList'>
@@ -87,6 +125,7 @@ const FriendList = ({ user }) => {
                 className='select'
                 options={friends.map(friend => ({ value: friend, label: friend }))}
                 components={{ Option }}
+                styles={selectStyles}
               />
           ) : (
               <p>No friends to display</p>
