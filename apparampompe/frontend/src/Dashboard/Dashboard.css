@@ -1,20 +1,31 @@
-.containerTable {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-}
-
-.loading {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+.dashboard{
     width: 100vw;
+    height: 100vh;
 }
 
-.loading img {
-    width: 20%;
-    height: auto;
+.dashboard video{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.dashboard div{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+    position: absolute;
+}
+
+.dashboard button{
+    background-color: #f1f1f1;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 10px;
 }
