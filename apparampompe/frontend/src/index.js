@@ -2,8 +2,9 @@ import React from 'react';
 import './index.css';
 import App from './App/App';
 import Login from './auth/login/login';
-import Dashboard from './Dashboard/Dashboard';
+import Match from './Match/Match';
 import Profile from './profile/profile';
+import Dashboard from './Dashboard/Dashboard';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 
@@ -17,12 +18,16 @@ const router = createBrowserRouter([
     element: <App />
   },
   {
+    path: "/dashboard",
+    element: <Dashboard />
+  },
+  {
     path: "/profile",
     element: <Profile />
   },
   {
-    path: "/dashboard",
-    element: <Dashboard />
+    path: "/Match",
+    element: <Match />
   }
 ]);
 
