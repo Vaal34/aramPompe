@@ -46,3 +46,23 @@
     color: #ffffff;
     text-shadow: 0 0 25px rgb(0, 0, 0), 0 0 5px rgb(148, 26, 19);
 }
+
+@media screen and (max-width: 600px) {
+    .dashboard .goToMatch,
+    .dashboard .goToProfile{
+        width: 70%;
+        height: 30%;
+        color: white;
+        font-size: 7vw;
+    }
+
+    .dashboard div{
+        flex-direction: column;
+    }
+
+    .dashboard .goToMatch:hover,
+    .dashboard .goToProfile:hover {
+        width: 75%;
+        height: 35%;
+    }
+}
