@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid')
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-9f1c46d1-6f7e-4a7f-8e02-7083fee9bf6d';
+const RIOT_API_KEY = 'RGAPI-08648a38-8dad-49ba-bbc6-ae843dc2b937';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());

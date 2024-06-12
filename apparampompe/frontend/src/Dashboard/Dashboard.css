@@ -20,12 +20,29 @@
     position: absolute;
 }
 
-.dashboard button{
-    background-color: #f1f1f1;
+.dashboard .goToMatch,
+.dashboard .goToProfile{
+    background-color: inherit;
     border: none;
     padding: 10px 20px;
-    font-size: 1.5rem;
     cursor: pointer;
     border-radius: 5px;
     margin: 10px;
+    width: 25%;
+    height: 60%;
+    border-radius: 50px;
+    box-shadow: 20px 20px 160px #202529,
+            -20px -20px 160px #202529;
+    transition: 0.5s ease;
+    color: rgba(255, 255, 255, 0.518);
+    font-weight: bold;
+    font-size: 3vw;
+}
+
+.dashboard .goToMatch:hover,
+.dashboard .goToProfile:hover {
+    width: 30%;
+    height: 70%;
+    color: #ffffff;
+    text-shadow: 0 0 25px rgb(0, 0, 0), 0 0 5px rgb(148, 26, 19);
 }

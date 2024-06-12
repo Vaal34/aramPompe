@@ -1,10 +1,42 @@
-.containerTable {
+.Match {
+    margin: 0;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+}
+
+.section1 div {
+    background-color: #ffbb00;
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-direction: column;
-    height: 100vh;
+    border-radius: 50px;
+    width: 80%;
+    height: 70%;
 }
+
+.section1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.section2 {
+    background-color: #f85c50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.section2 p {
+    font-size: 5vh;
+}
+
+.section3 { background-color: #4db6ac; }
+.section4 { background-color: #ffca28; }
 
 .loading {
     display: flex;
