@@ -5,6 +5,8 @@ import SignUpForm from './signUpForm/signUpForm';
 
 function Login() {
     const [isSignUp, setIsSignUp] = useState(false);
+    // eslint-disable-next-line
+    const [isRegistered, setIsRegistered] = useState(false);
 
     const handleSignUpClick = () => {
         setIsSignUp(true);
@@ -14,13 +16,20 @@ function Login() {
         setIsSignUp(false);
     };
 
+    const handleRegisterSuccess = (success) => {
+        if (success) {
+            setIsRegistered(true);
+            setIsSignUp(false);
+        }
+    };
+
     return (
         <div className="container">
             <div className="login">
                 <div className="logo">
                     <img src={require("../../assets/logoAramPompe.png")} alt="" />
                 </div>
-                {isSignUp ? <SignUpForm /> : <LoginForm />}
+                {isSignUp ? <SignUpForm onRegisterSuccess={handleRegisterSuccess}/> : <LoginForm />}
                 <button className="swapForm" onClick={isSignUp ? handleLoginClick : handleSignUpClick}>
                     {isSignUp ? 'Login' : 'Sign Up'}
                 </button>

@@ -6,11 +6,11 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-
+const { v4: uuidv4 } = require('uuid')
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-6733f32e-2867-4ee5-8ca4-8a214c722531';
+const RIOT_API_KEY = 'RGAPI-08648a38-8dad-49ba-bbc6-ae843dc2b937';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());
@@ -22,9 +22,9 @@ app.use(cors({
 
 const db = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
+    user: 'val34',
     password: 'root',
-    database: 'auth'
+    database: 'ARAMPOMPE'
 });
 
 db.connect(err => {
@@ -49,7 +49,7 @@ app.get('/api/riot/account/:gameName/:tagGame', async (req, res) => {
         res.json(response.data);
     } catch (error) {
         console.error('Error fetching riot data:', error);
-        res.status(500).send('Error fetching riot data');
+        return res.status(500).send('Error fetching riot data');
     }
 });
 
@@ -79,25 +79,59 @@ app.post('/api/users/register', async (req, res) => {
         return res.status(400).send('Username, password, and email are required');
     }
 
-    try {
-        const passwordHash = await bcrypt.hash(password, 10);
-        console.log('Password hash:', passwordHash);
-        const sql = 'INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)';
+    const checkUserQuery = 'SELECT * FROM users_log WHERE username = ? OR email = ?';
+    db.query(checkUserQuery, [username, email], async (err, result) => {
+        if (err) {
+            console.error('Error checking user:', err);
+            return res.status(500).send('Error registering user');
+        }
 
-        db.query(sql, [username, passwordHash, email], (err, result) => {
-            if (err) {
-                if (err.code === 'ER_DUP_ENTRY') {
-                    return res.status(400).send('Username or email already exists');
-                }
-                console.error('Error registering user:', err);
-                return res.status(500).send('Error registering user');
+        if (result.length > 0) {
+            const existingUser = result[0];
+            if (existingUser.username === username) {
+                return res.status(400).send('Username already exists');
+            } else if (existingUser.email === email) {
+                return res.status(400).send('Email already exists');
             }
-            res.status(201).send('User registered successfully');
-        });
-    } catch (error) {
-        console.error('Error hashing password:', error);
-        res.status(500).send('Error registering user');
-    }
+        }
+
+        try {
+            const passwordHash = await bcrypt.hash(password, 10);
+            console.log('Password hash:', passwordHash);
+
+            const userId = uuidv4();
+            const sqlInsertUser = 'INSERT INTO users_log (id, username, password_hash, email) VALUES (?, ?, ?, ?)';
+            db.query(sqlInsertUser, [userId, username, passwordHash, email], (err, result) => {
+                if (err) {
+                    console.error('Error inserting user:', err);
+                    return res.status(500).send('Error registering user');
+                }
+
+                const friendsProfile = [];
+                const targetsProfile = [];
+                const sqlInsertUserInfo = 'INSERT INTO user_info (user_id, targets_profile, friends_profile, current_target) VALUES (?, ?, ?, ?)';
+                db.query(sqlInsertUserInfo, [userId, JSON.stringify(friendsProfile), JSON.stringify(targetsProfile), ""], (err, result) => {
+                    if (err) {
+                        console.error('Error inserting user info:', err);
+                        return res.status(500).send('Error registering user');
+                    }
+
+                    const sqlInsertUserStat = 'INSERT INTO user_stat (user_id, pompe, calorie) VALUES (?, ?, ?)';
+                    db.query(sqlInsertUserStat, [userId, 0, 0], (err, result) => {
+                        if (err) {
+                            console.error('Error inserting user stat:', err);
+                            return res.status(500).send('Error registering user');
+                        }
+
+                        return res.status(201).send('User registered successfully');
+                    });
+                });
+            });
+        } catch (error) {
+            console.error('Error registering user:', error);
+            return res.status(500).send('Error registering user');
+        }
+    });
 });
 
 // Login user
@@ -109,7 +143,7 @@ app.post('/api/users/login', async (req, res) => {
     }
 
     try {
-        const sql = 'SELECT * FROM users WHERE username = ?';
+        const sql = 'SELECT * FROM users_log WHERE username = ?';
         db.query(sql, [username], async (err, results) => {
             if (err) {
                 console.error('Error fetching user:', err);
@@ -142,6 +176,13 @@ app.post('/api/users/login', async (req, res) => {
     }
 });
 
+// Logout user
+app.post('/api/users/logout', (req, res) => {
+    res.clearCookie('token', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    return res.status(200).send('Logged out successfully');
+});
+
+
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.token || req.headers['authorization'];
     if (!token) {
@@ -170,6 +211,160 @@ app.get('/api/users/current', authenticateToken, (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+app.get('/api/user/:id', authenticateToken, (request, response) => {
+    const { id } = request.params;
+    const sql = `SELECT * FROM users_log WHERE id = ?`;
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error('Error fetching user:', err);
+            return response.status(500).send('Error fetching user');
+        }
+
+        if (result.length === 0) {
+            return response.status(404).send('User not found');
+        }
+
+        response.json(result[0]);
+    });
+});
+
+
+//  user_info
+app.post('/api/user/friends/addfriend', authenticateToken, (req, res) => {
+    const { user_id, friend } = req.body;
+
+    const sqlSelect = `SELECT friends_profile FROM user_info WHERE user_id = ?`;
+    db.query(sqlSelect, [user_id], (err, result) => {
+        if (err) {
+            console.error('Erreur lors de la récupération du profil des amis :', err);
+            return res.status(500).send('Erreur lors de la récupération du profil des amis');
+        }
+
+        let friendsProfile = result[0].friends_profile;
+        friendsProfile.push(friend);
+
+        const sqlUpdate = `UPDATE user_info SET friends_profile = ? WHERE user_id = ?`;
+        db.query(sqlUpdate, [JSON.stringify(friendsProfile), user_id], (err, result) => {
+            if (err) {
+                console.error('Erreur lors de la mise à jour du profil des amis :', err);
+                return res.status(500).send('Erreur lors de la mise à jour du profil des amis');
+            }
+            console.log(`Ami ${friend} ajouté avec succès`);
+            res.status(200).send('Profil des amis mis à jour avec succès');
+        });
+    });
+});
+
+
+app.post('/api/user/friends/deletefriend', authenticateToken, async (req, res) => {
+    const { user_id, friend } = req.body.data;
+    const sql = `SELECT friends_profile from user_info WHERE user_id = ?`;
+    let listFriend = [];
+    db.query(sql, [user_id], (err, result) => {
+        listFriend = result[0].friends_profile;
+        listFriend = listFriend.filter(f => f !== friend);
+
+        updateSQL = `UPDATE user_info SET friends_profile = ? WHERE user_id = ?`;
+        db.query(updateSQL, [JSON.stringify(listFriend), user_id], (err, result) => {
+            if (err) {
+                console.error('Error updating friends profile:', err);
+                return res.status(500).send('Error updating friends profile');
+            }
+            console.log(`Friends ${friend} delete successfully`);
+            res.status(200).send('Friends profile updated successfully');
+        });
+    });
+});
+
+// Target Profile
+app.post('/api/user/targets/addtarget', authenticateToken, (req, res) => {
+    const { user_id, target } = req.body;
+
+    const sqlSelect = `SELECT targets_profile FROM user_info WHERE user_id = ?`;
+    db.query(sqlSelect, [user_id], (err, result) => {
+        if (err) {
+            console.error('Erreur lors de la récupération du profil des cibles :', err);
+            return res.status(500).send('Erreur lors de la récupération du profil des cibles');
+        }
+
+        let targetsProfile = result[0].targets_profile;
+        targetsProfile.push(target);
+
+        const sqlUpdate = `UPDATE user_info SET targets_profile = ? WHERE user_id = ?`;
+        db.query(sqlUpdate, [JSON.stringify(targetsProfile), user_id], (err, result) => {
+            if (err) {
+                console.error('Erreur lors de la mise à jour du profil des cibles :', err);
+                return res.status(500).send('Erreur lors de la mise à jour du profil des cibles');
+            }
+            console.log(`Cible ${target} ajoutée avec succès`);
+            res.status(200).send('Profil des cibles mis à jour avec succès');
+        });
+    });
+});
+
+
+app.post('/api/user/targets/deletetarget', authenticateToken, async (req, res) => {
+    const { user_id, target } = req.body.data;
+    const sql = `SELECT targets_profile from user_info WHERE user_id = ?`;
+    let listTarget = [];
+    db.query(sql, [user_id], (err, result) => {
+        listTarget = result[0].targets_profile;
+        listTarget = listTarget.filter(t => t !== target);
+
+        updateSQL = `UPDATE user_info SET targets_profile = ? WHERE user_id = ?`;
+        db.query(updateSQL, [JSON.stringify(listTarget), user_id], (err, result) => {
+            if (err) {
+                console.error('Error updating targets profile:', err);
+                return res.status(500).send('Error updating targets profile');
+            }
+            console.log(`Target ${target} delete successfully`);
+            res.status(200).send('Targets profile updated successfully');
+        });
+    });
+});
+
+app.post('/api/user/targets/currenttarget', authenticateToken, async (req, res) => {
+    const { user_id, target } = req.body;
+    const sql = `UPDATE user_info SET current_target = ? WHERE user_id = ?`;
+    db.query(sql, [target, user_id], (err, result) => {
+        if (err) {
+            console.error('Error updating current target:', err);
+            return res.status(500).send('Error updating current target');
+        }
+        console.log(`Current target ${target} updated successfully`);
+        res.status(200).send('Current target updated successfully');
+    });
+});
+
+app.get('/api/user/targets/currenttarget/:user_id', authenticateToken, (req, res) => {
+    const { user_id } = req.params;
+    const sql = `SELECT current_target FROM user_info WHERE user_id = ?`;
+    db.query(sql, [user_id], (err, result) => {
+        if (err) {
+            console.error('Error fetching current target:', err);
+            return res.status(500).send('Error fetching current target');
+        }
+        res.status(200).json({ currentTarget: result[0].current_target });
+    });
+});
+
+app.get('/api/user/user_info/:id', authenticateToken, (req, res) => {
+    const { id } = req.params;
+    const sql = `SELECT * FROM user_info WHERE user_id = ?`;
+    db.query(sql, [id], (err, result) => {
+        if (err) {
+            console.error('Error fetching user info:', err);
+            return res.status(500).send('Error fetching user info');
+        }
+
+        if (result.length === 0) {
+            return res.status(404).send('User info not found');
+        }
+
+        res.json(result[0]);
+    });
+})
 
 app.listen(PORT, () => {
     console.log(`Backend server running on port ${PORT}`);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, /*useEffect*/ } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './loginForm.css';
@@ -30,7 +30,7 @@ const LoginForm = () => {
             setSuccess('Login successful');
             setError('');
             setLoggedInUser(response.data.username);
-            navigate('/profile');
+            navigate('/dashboard');
         } catch (error) {
             setError('Error logging in');
             setSuccess('');
@@ -38,17 +38,17 @@ const LoginForm = () => {
         }
     };
 
-    useEffect(() => {
-        const fetchCurrentUser = async () => {
-            try {
-                const response = await axios.get('/api/users/current');
-                setLoggedInUser(response.data.username);
-            } catch (error) {
-                console.error('Error fetching current user:', error);
-            }
-        };
-        fetchCurrentUser();
-    }, []);
+    // useEffect(() => {
+    //     const fetchCurrentUser = async () => {
+    //         try {
+    //             const response = await axios.get('/api/users/current');
+    //             setLoggedInUser(response.data.username);
+    //         } catch (error) {
+    //             console.error('Error fetching current user:', error);
+    //         }
+    //     };
+    //     fetchCurrentUser();
+    // }, []);
 
     return (
         <div>

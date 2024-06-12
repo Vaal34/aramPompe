@@ -1,51 +1,43 @@
-import React, { useState } from 'react';
-import Select from 'react-dropdown-select';
+import React from 'react';
 import './userProfile.css';
-import Popup from './popup/popup';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const UserProfile = ({ user }) => {
-    // eslint-disable-next-line
-    const [values, setValues] = useState("");
-    const [isOpen, setIsOpen] = useState(false);
 
-    const options = [
-        {
-          id: 1,
-          name: 'Leanne Graham'
-        },
-        {
-          id: 2,
-          name: 'Ervin Howell'
-        }
-      ];
+    const navigate = useNavigate();
 
-    const togglePopup = () => {
-        setIsOpen(!isOpen);
+    const handleLogout = () => {
+        axios.post('/api/users/logout')
+        .then(response => {
+            if (response.status === 200) {
+                console.log('Logged out');
+                navigate('/');
+            } else {
+            throw new Error('Failed to logout');
+            }
+        })
+        .catch(error => {
+            console.error(error);
+        });
     }
 
     return (
         <>
             {user ? (
-                <div className='dataProfil'>
-                    <p>email :</p>
-                    <h2>{user.email}</h2>
-                    <p>Liste de vos comptes Riot :</p>
-                    <Select
-                        options={options}
-                        labelField="name"
-                        valueField="id"
-                        onChange={(values) => setValues(values)}
-                    />
-                </div>
+                <>
+                    <div className='dataProfil'>
+                        <p>email :</p>
+                        <h2>{user.email}</h2>
+                    </div>
+                    <button className='buttonLogout' onClick={handleLogout}>Logout</button>
+                </>
             ) : (
                 <p>No user information available</p>
             )}
-            {isOpen && <Popup isOpen={isOpen} togglePopup={togglePopup} />}
-            <button className="sendAddAccount" type="submit" onClick={togglePopup}>
-                Ajouter un compte Riot
-            </button>
         </>
     );
 };
+
 
 export default UserProfile;

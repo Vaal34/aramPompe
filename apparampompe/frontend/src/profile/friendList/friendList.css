@@ -1,0 +1,56 @@
+/* Friend List Section */
+#friendListSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 90%;
+}
+
+/* Input */
+#friendListSection input[type="text"] {
+    width: 80%;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+/* Button */
+#friendListSection button {
+    width: 80%;
+    padding: 10px;
+    background-color: #d13639;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+#friendListSection button:hover {
+    background-color: #960808;
+}
+
+
+.formFriendList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 40%;
+    width: 100%;
+    justify-content: center;
+}
+
+.select {
+    background: none;
+    width: 80%;
+    font-size: 1rem;
+}
+
+.dropDown {
+    display: flex;
+    margin: 1%;
+    overflow-y: auto;
+}

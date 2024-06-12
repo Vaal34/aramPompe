@@ -13,6 +13,11 @@
     <audio id="myAudio" src="%PUBLIC_URL%/song.mp3" preload="auto" loop volume="0.1"></audio>
     <img id="volumeIcon" src="%PUBLIC_URL%/volume.png" alt="Volume" onclick="toggleSound()">
     <script>
+      window.onload = function() {
+        const volumeIcon = document.getElementById('volumeIcon');
+        volumeIcon.classList.add('loaded');
+      }
+
       function toggleSound() {
         const audioElem = document.getElementById('myAudio');
         const volumeIcon = document.getElementById('volumeIcon');

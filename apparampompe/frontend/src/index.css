@@ -5,11 +5,12 @@ body {
 }
 
 #volumeIcon {
-  position: absolute;
+  position: fixed;
   bottom: 20px;
   right: 20px;
   width: 30px;
   height: 30px;
   opacity: 0.8;
   cursor: pointer;
+  z-index: 1000;
 }
