@@ -30,7 +30,7 @@ const LoginForm = () => {
             setSuccess('Login successful');
             setError('');
             setLoggedInUser(response.data.username);
-            navigate('/profile');
+            navigate('/dashboard');
         } catch (error) {
             setError('Error logging in');
             setSuccess('');
