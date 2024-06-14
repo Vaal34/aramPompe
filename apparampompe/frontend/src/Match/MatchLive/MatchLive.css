@@ -1,0 +1,44 @@
+.MatchButton {
+    background: none;
+    border-radius: 50px;
+    width: 70%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    justify-content: space-evenly;
+    transition: 0.5s;
+}
+
+.MatchButton button {
+    background-color: #dfdfdf;
+    border: none;
+    border-radius: 25px;
+    width: 50%;
+    height: 20%;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    transition: 0.5s ease-in-out;
+    transform: scale(1);
+}
+
+.MatchButton button:hover {
+    transform: scale(1.1);
+    background-color: #ffffff;
+}
+
+.formMatch {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: 0.5s;
+}
+
+Select {
+    color: black;
+}

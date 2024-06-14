@@ -3,25 +3,13 @@ import './Match.css';
 import TableNormalGame from '../TableNormalGame/TableNormalGame';
 import TableArenaMode from '../TableArenaMode/TableArenaMode';
 import axios from 'axios';
+import Classement from './Classement/Classement';
+import MatchLive from './MatchLive/MatchLive';
+import PompeComponent from './PompeComponent/PompeComponent';
 
 function Match() {
   const [matchData, setMatchData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [pompes, setPompes] = useState(0);
-
-  let targetPompes = 45;
-  let interval = null;
-
-  useEffect(() => {
-    if (pompes < targetPompes) {
-      const delay = 200 * (1 - pompes / targetPompes);
-      interval = setTimeout(() => {
-        setPompes(pompes + 1);
-      }, delay);
-    }
-
-    return () => clearTimeout(interval);
-  }, [pompes]);
 
   const userName = "Kaao";
   const tagGame = "EUV";
@@ -67,12 +55,14 @@ function Match() {
         </div>
 
         <div className='section section2'>
-          <h1>Pompes</h1>
-          <p>Nombre de pompes réalisées par les joueurs</p>
-          <p>{pompes}</p>
+          <PompeComponent />
         </div>
-        <div className='section section3'></div>
-        <div className='section section4'></div>
+        <div className='section section3'>
+          <MatchLive />
+        </div>
+        <div className='section section4'>
+          <Classement />
+        </div>
       </div>
   );
 }

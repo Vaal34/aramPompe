@@ -33,6 +33,7 @@
     border-radius: 50px;
     box-shadow: 20px 20px 160px #202529,
             -20px -20px 160px #202529;
+    transform: scale(1);
     transition: 0.5s ease;
     color: rgba(255, 255, 255, 0.518);
     font-weight: bold;
@@ -41,8 +42,7 @@
 
 .dashboard .goToMatch:hover,
 .dashboard .goToProfile:hover {
-    width: 30%;
-    height: 70%;
+    transform: scale(1.05);
     color: #ffffff;
     text-shadow: 0 0 25px rgb(0, 0, 0), 0 0 5px rgb(148, 26, 19);
 }
