@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid')
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-08648a38-8dad-49ba-bbc6-ae843dc2b937';
+const RIOT_API_KEY = 'RGAPI-9af2687a-6e4c-4beb-a569-72467dfb2c58';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());
@@ -116,8 +116,8 @@ app.post('/api/users/register', async (req, res) => {
                         return res.status(500).send('Error registering user');
                     }
 
-                    const sqlInsertUserStat = 'INSERT INTO user_stat (user_id, pompe, calorie) VALUES (?, ?, ?)';
-                    db.query(sqlInsertUserStat, [userId, 0, 0], (err, result) => {
+                    const sqlInsertUserStat = 'INSERT INTO user_stat (user_id, pompe, calorie, username) VALUES (?, ?, ?, ?)';
+                    db.query(sqlInsertUserStat, [userId, 0, 0, username], (err, result) => {
                         if (err) {
                             console.error('Error inserting user stat:', err);
                             return res.status(500).send('Error registering user');
@@ -164,7 +164,7 @@ app.post('/api/users/login', async (req, res) => {
             const token = jwt.sign(
                 { id: user.id, username: user.username, email: user.email },
                 JWT_SECRET,
-                { expiresIn: '1h' }
+                { expiresIn: '10h' }
             );
             console.log('Token:', token);
             res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
@@ -349,6 +349,17 @@ app.get('/api/user/targets/currenttarget/:user_id', authenticateToken, (req, res
     });
 });
 
+app.get('/api/user/user_stats/classement', authenticateToken, (req, res) => {
+    const sql = `SELECT username, pompe, calorie FROM user_stat ORDER BY pompe DESC`;
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.error('Error fetching user stats:', err);
+            return res.status(500).send('Error fetching user stats');
+        }
+        res.json(result);
+    });
+})
+
 app.get('/api/user/user_info/:id', authenticateToken, (req, res) => {
     const { id } = req.params;
     const sql = `SELECT * FROM user_info WHERE user_id = ?`;
@@ -365,6 +376,31 @@ app.get('/api/user/user_info/:id', authenticateToken, (req, res) => {
         res.json(result[0]);
     });
 })
+
+app.get('/api/user_stats/all/search', authenticateToken, (req, res) => {
+    const query = req.query.query;
+    const sql = `SELECT * FROM user_stat WHERE username LIKE ?`;
+    db.query(sql, [`%${query}%`], (err, result) => {
+        if (err) {
+            console.error('Error fetching user stats:', err);
+            return res.status(500).send('Error fetching user stats');
+        }
+        res.json(result);
+    });
+});
+
+app.post('/api/match/create', authenticateToken, (req, res) => {
+    console.log(req.body)
+    const { joueur, match_id } = req.body;
+    const sql = `INSERT INTO party (joueur, match_id, pompe) VALUES (?, ?, ?)`;
+    db.query(sql, [joueur, match_id, 0], (err, result) => {
+        if (err) {
+            console.error('Error creating match:', err);
+            return res.status(500).send('Error creating match');
+        }
+        res.status(201).send('Match created successfully');
+    });
+});
 
 app.listen(PORT, () => {
     console.log(`Backend server running on port ${PORT}`);

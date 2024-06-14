@@ -6,29 +6,30 @@
     grid-template-columns: 1fr 1fr;
 }
 
-.section1 div {
-    background-color: #ffbb00;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50px;
-    width: 80%;
-    height: 70%;
-}
-
-.section1 {
+.section {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+.section1 div {
+    background-color: #ffbb00;
+    border-radius: 50px;
+    width: 80%;
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.section1 {
+    background-color: #9900ff;
 }
 
 .section2 {
     background-color: #f85c50;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 
 .section2 p {
