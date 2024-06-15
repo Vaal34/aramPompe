@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import ClassementMatch from "./ClassementMatch/ClassementMatch";
 import Select from 'react-select';
 import axios from 'axios';
 import "./MatchLive.css";
@@ -12,6 +13,8 @@ function MatchLive() {
     const [selectedPlayers, setSelectedPlayers] = useState([]);
     const [isMatchCreated, setIsMatchCreated] = useState(false);
     const [matchCode, setMatchCode] = useState('');
+    const [leaderboardData, setLeaderboardData] = useState([]);
+    const [enteredMatchCode, setEnteredMatchCode] = useState('');
 
     const handleChange = (selectedOptions) => {
         setSelectedPlayers(selectedOptions.map(option => option.value));
@@ -62,44 +65,74 @@ function MatchLive() {
         .catch(error => {
             console.error('Error creating match:', error);
         }))
-
     }
+
+    const handleJoinMatchSubmit = (event) => {
+        event.preventDefault();
+        axios.get(`/api/match/${enteredMatchCode}`)
+            .then(response => {
+                setLeaderboardData(response.data);
+                setMatchCode(enteredMatchCode);
+                setIsMatchCreated(true);
+            })
+            .catch(error => {
+                console.error('Error joining match:', error);
+                alert('Invalid match code.');
+            });
+    }
+
+    useEffect(() => {
+        if (matchCode) {
+            axios.get(`/api/match/${matchCode}`)
+                .then(response => {
+                    setLeaderboardData(response.data);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                });
+        }
+    }, [matchCode]);
 
     const playerOptions = joueurs.map(joueur => ({ value: joueur.username, label: joueur.username }));
     console.log(selectedPlayers)
 
     return (
         <>
-            <div className="MatchButton">
+            <div className="JoinOrCreate">
                 {!isMatchCreated ? (
                     <>
-                        <button onClick={handleCreateMatch}> Crée un match </button>
+                        <button className="createMatchButton" onClick={handleCreateMatch}> Create a match </button>
                         {createMatch && (
                             <div className="formMatch formCreateMatch">
-                                <label>Joueurs:</label>
+                                <label>JOUEURS :</label>
                                 <Select
                                     isMulti
                                     options={playerOptions}
                                     onInputChange={handleInputChange}
                                     onChange={handleChange}
-                                    placeholder="Rechercher un joueur"
+                                    placeholder="Search for players..."
                                 />
-                                <button onClick={handleCreateMatchSubmit}>Create a match</button>
+                                <i>Please also enter your account.</i>
+                                <button className="sendMatch" onClick={handleCreateMatchSubmit}>Create</button>
                             </div>
                         )}
                         {joinMatch && (
-                            <form className="formMatch formJoinMatch">
+                            <form className="formMatch formJoinMatch" onSubmit={handleJoinMatchSubmit}>
                                 <label>Code du match:</label>
-                                <input type="text" name="name" />
+                                <input
+                                    type="text"
+                                    value={enteredMatchCode}
+                                    onChange={(e) => setEnteredMatchCode(e.target.value)}
+                                />
                                 <input type="submit" value="Rejoindre" />
                             </form>
                         )}
-                        <button onClick={handleJoinMatch}> Rejoindre un match </button>
+                        <button className="joinMatchButton" onClick={handleJoinMatch}> Rejoindre un match </button>
                     </>
                 ) : (
-                    <div>
-                        <p>Match créé !</p>
-                        <p>Code du match: {matchCode}</p>
+                    <div className="DashboardMatch">
+                        <ClassementMatch matchCode={matchCode} leaderboardData={leaderboardData} />
+                        <p>Code du match: <b>{matchCode}</b></p>
                     </div>
                 )}
             </div>

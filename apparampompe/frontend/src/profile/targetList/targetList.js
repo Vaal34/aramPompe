@@ -29,7 +29,11 @@ const TargetList = ({ user }) => {
                 axios.post('/api/user/targets/addtarget', {
                     user_id: user.id,
                     target: targetName
-                });
+                })
+                .then(() => {
+                    document.cookie = `targetprofile=${targetName}; path=/`;
+                    console.log('Cookie set:', document.cookie);
+                })
             } catch (error) {
                 console.error('Error checking target:', error);
                 setTargetError('User does not exist');
@@ -52,6 +56,9 @@ const TargetList = ({ user }) => {
         axios.post('/api/user/targets/currenttarget', {
             user_id: user.id,
             target: selectedTarget.value
+            })
+            .then(() => {
+                document.cookie = `targetprofile=${selectedTarget.value}; path=/`;
             })
         .catch(error => {
             console.error('Error updating current target:', error);

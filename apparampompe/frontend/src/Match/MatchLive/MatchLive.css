@@ -1,7 +1,7 @@
-.MatchButton {
+.JoinOrCreate {
     background: none;
     border-radius: 50px;
-    width: 70%;
+    width: 80%;
     height: 80%;
     display: flex;
     flex-direction: column;
@@ -11,7 +11,8 @@
     transition: 0.5s;
 }
 
-.MatchButton button {
+.JoinOrCreate .createMatchButton ,
+.JoinOrCreate .joinMatchButton {
     background-color: #dfdfdf;
     border: none;
     border-radius: 25px;
@@ -25,7 +26,8 @@
     transform: scale(1);
 }
 
-.MatchButton button:hover {
+.JoinOrCreate .createMatchButton:hover,
+.JoinOrCreate .joinMatchButton:hover {
     transform: scale(1.1);
     background-color: #ffffff;
 }
@@ -41,4 +43,19 @@
 
 Select {
     color: black;
+}
+
+.sendMatch {
+    font-size: small;
+    width: 20%;
+    border: none;
+    border-radius: 12px;
+}
+
+.DashboardMatch {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
 }
