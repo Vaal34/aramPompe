@@ -30,6 +30,8 @@ const Profile = () => {
         fetchUser();
     }, []);
 
+    console.log(user)
+
     const handleImageClick = () => {
         setEditUser(!editUser);
     };

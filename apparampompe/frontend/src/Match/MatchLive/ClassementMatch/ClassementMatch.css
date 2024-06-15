@@ -1,0 +1,46 @@
+.classement-match {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.classement-match table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    border-radius: 25px;
+    overflow: hidden;
+    margin: 1%;
+}
+
+.classement-match th {
+    background-color: #f2f2f2;
+    color: #333;
+    font-weight: bold;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+}
+
+.classement-match td {
+    border-bottom: 1px solid #ccc;
+}
+
+.classement-match tr:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.classement-match tr:nth-child(even) {
+    background-color: #d9d9d9;
+}
+
+/* Style des lignes au survol */
+.classement-match tr:hover {
+    background-color: #e6e6e6;
+}
+
+.classement-match tr td:nth-child(1) {
+    width: 20%;
+}

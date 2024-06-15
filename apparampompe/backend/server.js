@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid')
 const app = express();
 const PORT = 5000;
 
-const RIOT_API_KEY = 'RGAPI-9af2687a-6e4c-4beb-a569-72467dfb2c58';
+const RIOT_API_KEY = 'RGAPI-b8b2c559-b1f0-4553-b967-44520a433b72';
 const JWT_SECRET = 'ARAMPOMPE';
 
 app.use(bodyParser.json());
@@ -168,6 +168,7 @@ app.post('/api/users/login', async (req, res) => {
             );
             console.log('Token:', token);
             res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+            res.cookie('username', user.username, { secure: process.env.NODE_ENV === 'production' });
             res.json({ message: 'Login successful', username: user.username });
         });
     } catch (error) {
@@ -401,6 +402,18 @@ app.post('/api/match/create', authenticateToken, (req, res) => {
         res.status(201).send('Match created successfully');
     });
 });
+
+app.get('/api/match/:match_id', authenticateToken, (req, res) => {
+    const { match_id } = req.params;
+    const sql = `SELECT joueur, pompe FROM party WHERE match_id = ?`;
+    db.query(sql, [match_id], (err, result) => {
+        if (err) {
+            console.error('Error fetching match:', err);
+            return res.status(500).send('Error fetching match');
+        }
+        res.json(result);
+    });
+})
 
 app.listen(PORT, () => {
     console.log(`Backend server running on port ${PORT}`);

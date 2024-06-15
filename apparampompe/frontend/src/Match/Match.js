@@ -10,9 +10,9 @@ import PompeComponent from './PompeComponent/PompeComponent';
 function Match() {
   const [matchData, setMatchData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-
-  const userName = "Kaao";
-  const tagGame = "EUV";
+  const targetprofile = document.cookie.match('(^|;)\\s*targetprofile\\s*=\\s*([^;]+)')?.pop() || '';
+  const userName = targetprofile.split('#')[0];
+  const tagGame = targetprofile.split('#')[1];
 
   useEffect(() => {
     const fetchData = async () => {
