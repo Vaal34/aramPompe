@@ -121,7 +121,6 @@ function MatchLive({ onSelectedPlayersChange, onMatchCreated, takeMatchCode }) {
                         <button className="createMatchButton" onClick={handleCreateMatch}> Create a match </button>
                         {createMatch && (
                             <div className="formMatch formCreateMatch">
-                                <label>JOUEURS :</label>
                                 <Select
                                     isMulti
                                     options={playerOptions}
@@ -130,7 +129,7 @@ function MatchLive({ onSelectedPlayersChange, onMatchCreated, takeMatchCode }) {
                                     placeholder="Search for players..."
                                 />
                                 <i>Please also enter your account.</i>
-                                <button className="sendMatch" onClick={handleCreateMatchSubmit}>Create</button>
+                                <button className="sendMatch" onClick={handleCreateMatchSubmit}>create</button>
                             </div>
                         )}
                         {joinMatch && (
