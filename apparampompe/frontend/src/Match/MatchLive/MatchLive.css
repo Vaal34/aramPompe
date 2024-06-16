@@ -16,9 +16,9 @@
     background-color: #dfdfdf;
     border: none;
     border-radius: 25px;
-    width: 50%;
-    height: 20%;
-    font-size: 1.5em;
+    width: 30%;
+    height: 25%;
+    font-size: 2vw;
     font-weight: bold;
     color: #333;
     cursor: pointer;
@@ -41,13 +41,18 @@
     transition: 0.5s;
 }
 
+.formMatch i {
+    color: white;
+}
+
 Select {
     color: black;
 }
 
 .sendMatch {
     font-size: small;
-    width: 20%;
+    width: 15%;
+    height: 20%;
     border: none;
     border-radius: 12px;
 }
@@ -58,4 +63,5 @@ Select {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    color: white;
 }
