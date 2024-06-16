@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import ClassementMatch from "./ClassementMatch/ClassementMatch";
 import Select from 'react-select';
+import useWebSocket from 'react-use-websocket';
 import axios from 'axios';
 import "./MatchLive.css";
 const { nanoid } = require('nanoid');
 
-function MatchLive() {
+function MatchLive({ onSelectedPlayersChange, onMatchCreated, takeMatchCode }) {
     const [createMatch, setCreateMatch] = useState(false);
     const [joinMatch, setJoinMatch] = useState(false);
     const [joueurs, setJoueurs] = useState([]);
+    // eslint-disable-next-line
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedPlayers, setSelectedPlayers] = useState([]);
     const [isMatchCreated, setIsMatchCreated] = useState(false);
@@ -17,25 +19,18 @@ function MatchLive() {
     const [enteredMatchCode, setEnteredMatchCode] = useState('');
 
     const handleChange = (selectedOptions) => {
-        setSelectedPlayers(selectedOptions.map(option => option.value));
+        setSelectedPlayers(selectedOptions.map(option => ({ joueur: option.value, gameName: option.gameName })));
+        onSelectedPlayersChange(selectedOptions.map(option => ({ joueur: option.value, gameName: option.gameName })));
     };
 
     const handleCreateMatch = () => {
-        if (createMatch) {
-            setCreateMatch(false);
-        } else {
-            setJoinMatch(false);
-            setCreateMatch(true);
-        }
+        setCreateMatch(!createMatch);
+        setJoinMatch(false);
     };
 
     const handleJoinMatch = () => {
-        if (joinMatch) {
-            setJoinMatch(false);
-        } else {
-            setCreateMatch(false);
-            setJoinMatch(true);
-        }
+        setJoinMatch(!joinMatch);
+        setCreateMatch(false);
     };
 
     const handleInputChange = (newValue) => {
@@ -55,17 +50,23 @@ function MatchLive() {
         event.preventDefault();
         const newMatchCode = nanoid(6);
         setMatchCode(newMatchCode);
-        selectedPlayers.map(player => axios.post('/api/match/create', {
-            joueur: player,
-            match_id: newMatchCode
-        })
-        .then(response => {
-            setIsMatchCreated(true);
-        })
-        .catch(error => {
-            console.error('Error creating match:', error);
-        }))
-    }
+        takeMatchCode(newMatchCode);
+        selectedPlayers.forEach(player => {
+            const { joueur, gameName } = player;
+            axios.post('/api/match/create', {
+                joueur: joueur,
+                match_id: newMatchCode,
+                gameName: gameName
+            })
+            .then(response => {
+                setIsMatchCreated(true);
+                onMatchCreated(true);
+            })
+            .catch(error => {
+                console.error('Error creating match:', error);
+            });
+        });
+    };
 
     const handleJoinMatchSubmit = (event) => {
         event.preventDefault();
@@ -73,13 +74,16 @@ function MatchLive() {
             .then(response => {
                 setLeaderboardData(response.data);
                 setMatchCode(enteredMatchCode);
+                takeMatchCode(enteredMatchCode);
                 setIsMatchCreated(true);
+                onMatchCreated(true);
+                onSelectedPlayersChange(response.data.map(player => ({ joueur: player.joueur, gameName: player.gameName })));
             })
             .catch(error => {
                 console.error('Error joining match:', error);
                 alert('Invalid match code.');
             });
-    }
+    };
 
     useEffect(() => {
         if (matchCode) {
@@ -93,8 +97,21 @@ function MatchLive() {
         }
     }, [matchCode]);
 
-    const playerOptions = joueurs.map(joueur => ({ value: joueur.username, label: joueur.username }));
-    console.log(selectedPlayers)
+    // WebSocket connection
+    // eslint-disable-next-line
+    const { sendMessage, lastMessage, readyState } = useWebSocket('ws://localhost:8080', {
+        onOpen: () => console.log('Connected to WebSocket'),
+        onMessage: (message) => {
+            const data = JSON.parse(message.data);
+            if (data.matchId === matchCode) {
+                setLeaderboardData(data.leaderboardData);
+            }
+        },
+        onClose: () => console.log('Disconnected from WebSocket'),
+        shouldReconnect: (closeEvent) => true,
+    });
+
+    const playerOptions = joueurs.map(joueur => ({ value: joueur.username, label: `${joueur.username} (${joueur.gameName})`, gameName: joueur.gameName }));
 
     return (
         <>

@@ -32,8 +32,12 @@
     background-color: #f85c50;
 }
 
-.section2 p {
-    font-size: 5vh;
+.section2 {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .section3 { background-color: #4db6ac; }

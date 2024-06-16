@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid')
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({ port: 8080 });
 const app = express();
 const PORT = 5000;
 
@@ -327,14 +329,24 @@ app.post('/api/user/targets/deletetarget', authenticateToken, async (req, res) =
 
 app.post('/api/user/targets/currenttarget', authenticateToken, async (req, res) => {
     const { user_id, target } = req.body;
-    const sql = `UPDATE user_info SET current_target = ? WHERE user_id = ?`;
-    db.query(sql, [target, user_id], (err, result) => {
+    const updateTargetQuery = `UPDATE user_info SET current_target = ? WHERE user_id = ?`;
+    const updateUserStatQuery = `UPDATE user_stat SET gameName = ? WHERE user_id = ?`;
+
+    db.query(updateTargetQuery, [target, user_id], (err, targetResult) => {
         if (err) {
             console.error('Error updating current target:', err);
             return res.status(500).send('Error updating current target');
         }
         console.log(`Current target ${target} updated successfully`);
-        res.status(200).send('Current target updated successfully');
+
+        db.query(updateUserStatQuery, [target, user_id], (err, statResult) => {
+            if (err) {
+                console.error('Error updating user stat:', err);
+                return res.status(500).send('Error updating user stat');
+            }
+            console.log(`User stat ${target} updated successfully`);
+            res.status(200).send('Current target and user stat updated successfully');
+        });
     });
 });
 
@@ -391,10 +403,9 @@ app.get('/api/user_stats/all/search', authenticateToken, (req, res) => {
 });
 
 app.post('/api/match/create', authenticateToken, (req, res) => {
-    console.log(req.body)
-    const { joueur, match_id } = req.body;
-    const sql = `INSERT INTO party (joueur, match_id, pompe) VALUES (?, ?, ?)`;
-    db.query(sql, [joueur, match_id, 0], (err, result) => {
+    const { joueur, match_id, gameName } = req.body;
+    const sql = `INSERT INTO party (joueur, match_id, pompe, gameName) VALUES (?, ?, ?, ?)`;
+    db.query(sql, [joueur, match_id, 0, gameName], (err, result) => {
         if (err) {
             console.error('Error creating match:', err);
             return res.status(500).send('Error creating match');
@@ -405,7 +416,7 @@ app.post('/api/match/create', authenticateToken, (req, res) => {
 
 app.get('/api/match/:match_id', authenticateToken, (req, res) => {
     const { match_id } = req.params;
-    const sql = `SELECT joueur, pompe FROM party WHERE match_id = ?`;
+    const sql = `SELECT joueur, pompe, gameName FROM party WHERE match_id = ?`;
     db.query(sql, [match_id], (err, result) => {
         if (err) {
             console.error('Error fetching match:', err);
@@ -414,6 +425,56 @@ app.get('/api/match/:match_id', authenticateToken, (req, res) => {
         res.json(result);
     });
 })
+
+app.post('/api/match/addPompe/:gameName', authenticateToken, (req, res) => {
+    console.log(req.body, "req.body, add")
+    const { gameName, match_id, newPompes } = req.body;
+    const sql = 'UPDATE party SET pompe = pompe + ? WHERE match_id = ? AND gameName = ?';
+    db.query(sql, [newPompes, match_id, gameName], (err, result) => {
+        if (err) {
+            console.error('Error updating match:', err);
+            return res.status(500).send('Error updating match');
+        }
+        res.status(200).send('Match updated successfully');
+        updateMatch(match_id); // Call updateMatch to notify clients
+        console.log('Match updated successfully');
+    });
+})
+
+// WebSocket $
+wss.on('connection', (ws) => {
+    console.log('Client connected');
+
+    ws.on('message', (message) => {
+        console.log('Received message:', message);
+    });
+
+    ws.on('close', () => {
+        console.log('Client disconnected');
+    });
+});
+
+// Function to broadcast updates to all connected clients
+const broadcast = (data) => {
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(data));
+        }
+    });
+};
+
+// Whenever a match is updated, call broadcast function
+const updateMatch = (matchId) => {
+    const sql = `SELECT joueur, pompe, gameName FROM party WHERE match_id = ?`;
+    db.query(sql, [matchId], (err, result) => {
+        if (err) {
+            console.error('Error fetching match:', err);
+            return;
+        }
+        // Broadcast the updated match data to all clients
+        broadcast({ matchId, leaderboardData: result });
+    });
+};
 
 app.listen(PORT, () => {
     console.log(`Backend server running on port ${PORT}`);
