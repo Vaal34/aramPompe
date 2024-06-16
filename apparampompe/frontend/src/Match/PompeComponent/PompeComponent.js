@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './PompeComponent.css';
 import axios from 'axios';
 
 const PompeComponent = ({ pompesToDo, targetProfile, matchCode}) => {
@@ -24,21 +25,18 @@ const PompeComponent = ({ pompesToDo, targetProfile, matchCode}) => {
             match_id: matchCode,
             newPompes: targetPompes
         })
-        .then(response => {
-            //
-        })
         .catch(error => {
             console.error('Error adding pompes:', error);
         });
     };
 
     return (
-        <>
+        <div className="pompeContainer">
             <h1>{playerLost} doit faire</h1>
             <h2>{pompes} pompes</h2>
             <i>une fois que vous terminer vos pompes ajoutez les</i>
             {playerLost === targetProfile && <button onClick={addPompe}>Add pompes</button>}
-        </>
+        </div>
     );
 };
 

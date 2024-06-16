@@ -3,16 +3,18 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    color: white;
     align-items: center;
 }
 
 .classement-match table {
-    width: 100%;
+    width: 60%;
     border-collapse: collapse;
     text-align: center;
     border-radius: 25px;
     overflow: hidden;
     margin: 1%;
+    color: black;
 }
 
 .classement-match th {
@@ -21,7 +23,7 @@
     font-weight: bold;
     padding: 10px;
     border-bottom: 1px solid #ccc;
-    text-align: left;
+    text-align: center;
 }
 
 .classement-match td {
@@ -33,10 +35,9 @@
 }
 
 .classement-match tr:nth-child(even) {
-    background-color: #d9d9d9;
+    background-color: #e6e6e6;
 }
 
-/* Style des lignes au survol */
 .classement-match tr:hover {
     background-color: #e6e6e6;
 }
