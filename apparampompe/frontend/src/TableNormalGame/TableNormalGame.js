@@ -1,11 +1,11 @@
-import React from 'react';
+import React  from 'react';
 import './TableNormalGame.css';
 
-function TableNormalGame({ matchData, gameName }) {
+function TableNormalGame({ matchData, players }) {
 
   const infoPlayers = matchData.info?.participants || [];
-  const teamCurrentPlayer = infoPlayers.find(player => player.riotIdGameName === gameName).teamId;
-  const teamPlayers = infoPlayers.filter(player => player.teamId === teamCurrentPlayer);
+  const gameNames = players.map(player => player.gameName.split('#')[0])
+  const teamCurrentPlayer = infoPlayers.filter(player => gameNames.includes(player.riotIdGameName));
 
   return (
     <table>
@@ -16,8 +16,8 @@ function TableNormalGame({ matchData, gameName }) {
         </tr>
       </thead>
       <tbody>
-        {teamPlayers.length > 0 ? (
-          teamPlayers.map((player, index) => (
+        {teamCurrentPlayer.length > 0 ? (
+          teamCurrentPlayer.map((player, index) => (
             <tr key={index}>
               <td>{player.riotIdGameName}</td>
               <td>{player.kills}/{player.deaths}/{player.assists} ({(player.challenges.killParticipation * 100).toFixed(0)}%)</td>
